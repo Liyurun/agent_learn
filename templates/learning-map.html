@@ -1,0 +1,57 @@
+<!-- GENERATED FILE: 请修改 content/、templates/ 或 assets/，不要直接编辑本文件。 -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Agent 学习与面试宝典知识星图，从原理、技术、实践、面试、进阶到实战工坊。">
+  <link rel="canonical" href="{{SITE_URL}}">
+  <title>学习星图 · Agent 学习与面试宝典</title>
+  <link rel="stylesheet" href="./assets/learning-map.css">
+</head>
+<body>
+  <main id="learningStarmap">
+    <nav class="starmap-nav" aria-label="站点导航">
+      <a class="starmap-brand" href="./">Agent <strong>星图</strong><span>/ 2026</span></a>
+      <div class="starmap-nav-links">
+        <a aria-current="page" href="./">学习星图</a>
+        <a href="./guide/">学习导读</a>
+        <a href="./quiz/">模块复盘</a>
+        <a href="./labs/">实战工坊</a>
+        <a href="./resources/">参考资源</a>
+      </div>
+    </nav>
+
+    <header class="starmap-hero">
+      <p class="starmap-eyebrow">Agent learning · star map</p>
+      <h1>点亮属于你的<br><em>Agent 认知星座</em></h1>
+      <p class="starmap-summary">从原理到实战，28 颗星连成六个星座。自由探索完整知识版图，每次只打开你正在阅读的一章。</p>
+    </header>
+
+    <section class="starmap-desktop" aria-label="六篇学习星图">
+      <svg id="constellationCanvas" role="img" aria-label="Agent 学习知识星图" viewBox="0 0 940 610"></svg>
+      <aside id="constellationTrack" class="constellation-track" aria-live="polite"></aside>
+    </section>
+
+    <nav id="constellationMobile" class="constellation-mobile" aria-label="移动端学习路径"></nav>
+
+    <nav class="constellation-fallback" aria-label="全部章节">
+{{STAR_MAP_FALLBACK}}
+    </nav>
+
+    <footer class="starmap-footer">
+      <div id="constellationLegend" class="constellation-legend" aria-label="星座图例"></div>
+      <div class="starmap-progress" aria-live="polite">
+        <strong id="starmapProgressCount">0/28</strong>
+        <div class="starmap-progress-copy">
+          <span class="starmap-progress-track"><i id="starmapProgressFill"></i></span>
+          <span id="starmapProgressText">开始点亮你的学习星图</span>
+        </div>
+      </div>
+    </footer>
+  </main>
+
+  <script id="starmapData" type="application/json">{{STAR_MAP_DATA}}</script>
+  <script src="./assets/learning-map.js"></script>
+</body>
+</html>

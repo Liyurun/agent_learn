@@ -6,6 +6,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Agent 学习与面试宝典 · 2026</title>
+  <meta name="description" content="面向中文开发者的系统性 Agent 学习与面试宝典。">
 
   <style>
     /* === Font faces === */
@@ -92,7 +93,7 @@
     }
     .topnav .brand {
       font-family: var(--font-head); font-weight: 700; font-size: 0.95rem;
-      color: var(--ink); letter-spacing: 0.02em; white-space: nowrap;
+      color: var(--ink); letter-spacing: 0.02em; white-space: nowrap; text-decoration: none;
     }
     .topnav .brand span { color: var(--accent); }
     .topnav nav { display: flex; gap: 0.3rem; flex-wrap: wrap; }
@@ -164,7 +165,7 @@
     /* === Cover === */
     .cover {
       position: relative; background: var(--dark);
-      background-image: url('assets/hero-cover.jpg');
+      background-image: url('./assets/hero-cover.jpg');
       background-size: cover; background-position: center;
       color: #fff; overflow: hidden;
     }
@@ -963,7 +964,7 @@
     }
   </style>
 </head>
-<body>
+<body class="full-book">
 
   <div class="progress-bar" id="progressBar"></div>
   <button class="to-top" id="toTop" aria-label="回到顶部">↑</button>
@@ -971,7 +972,7 @@
   <!-- ===== TOP NAV ===== -->
   <div class="topnav">
     <div class="topnav-inner">
-      <div class="brand">Agent 宝典 <span>/ 2026</span></div>
+      <a class="brand" href="#">Agent 宝典 <span>/ 2026</span></a>
       <nav class="book-nav" aria-label="全书导航">
         <div class="nav-group" data-part-id="part1">
           <a class="nav-trigger" href="#part1" aria-haspopup="true" aria-controls="nav-menu-part1" aria-expanded="false">原理</a>
@@ -7373,6 +7374,8 @@ client = AsyncOpenAI(base_url=<span class="st">"https://api.your-llm.com/v1"</sp
   </footer>
 
 
+
+  <script>window.HANDBOOK_PAGE = {};</script>
   <script src="./_shared/js/mermaid.min.js"></script>
   <script src="./_shared/js/echarts.min.js"></script>
   <script>

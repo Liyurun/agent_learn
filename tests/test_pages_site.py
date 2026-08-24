@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+import json
+import re
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -13,6 +16,7 @@ from tools.handbook_build import (
     render_top_navigation,
     resolve_site_href,
 )
+from tools.build_pages import build_site
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -115,6 +119,76 @@ class TemplateTests(unittest.TestCase):
         self.assertIn('href="#ch7"', navigation)
         self.assertIn('href="../resources/#references"', navigation)
         self.assertIn('href="../ch1/"', navigation)
+
+
+class PageBuildTests(unittest.TestCase):
+    def test_build_site_writes_isolated_routes(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            output = Path(tmp)
+            build_site(
+                output_dir=output,
+                site_url="https://example.test/book/",
+            )
+
+            self.assertTrue((output / "index.html").is_file())
+            self.assertTrue((output / "ch1" / "index.html").is_file())
+            self.assertTrue((output / "lab4" / "index.html").is_file())
+            self.assertTrue((output / "resources" / "index.html").is_file())
+
+            chapter = (output / "ch7" / "index.html").read_text(encoding="utf-8")
+            self.assertIn('id="ch7"', chapter)
+            self.assertNotIn('<section class="chapter" id="ch8">', chapter)
+            self.assertIn("../assets/handbook-interactions.js", chapter)
+            self.assertIn('"route":"ch7"', chapter)
+
+    def test_migrated_page_boundaries_are_balanced_in_isolated_pages(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            output = Path(tmp)
+            build_site(output_dir=output)
+
+            for route in ("ch3", "ch7", "ch12", "ch15", "ch24", "lab4", "insights"):
+                html = (output / route / "index.html").read_text(encoding="utf-8")
+                self.assertEqual(
+                    len(re.findall(r"<div\\b", html, re.IGNORECASE)),
+                    len(re.findall(r"</div\\s*>", html, re.IGNORECASE)),
+                    route,
+                )
+
+
+class StarmapTests(unittest.TestCase):
+    def test_homepage_contains_starmap_without_chapter_bodies(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            output = Path(tmp)
+            build_site(output_dir=output)
+            home = (output / "index.html").read_text(encoding="utf-8")
+
+            self.assertIn('id="learningStarmap"', home)
+            self.assertIn('id="constellationTrack"', home)
+            self.assertIn('class="constellation-fallback"', home)
+            self.assertIn("./assets/learning-map.css", home)
+            self.assertIn("./assets/learning-map.js", home)
+            self.assertNotIn('id="ch1"', home)
+            self.assertNotIn("八周", home)
+            self.assertNotIn("今日任务", home)
+
+    def test_homepage_data_has_six_groups_and_28_entries(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            output = Path(tmp)
+            build_site(output_dir=output)
+            home = (output / "index.html").read_text(encoding="utf-8")
+            match = re.search(
+                r'<script id="starmapData" type="application/json">(.*?)</script>',
+                home,
+                re.DOTALL,
+            )
+
+            self.assertIsNotNone(match)
+            data = json.loads(match.group(1))
+            self.assertEqual(len(data["groups"]), 6)
+            self.assertEqual(
+                sum(len(group["entries"]) for group in data["groups"]),
+                28,
+            )
 
 
 if __name__ == "__main__":

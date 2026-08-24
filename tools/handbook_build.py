@@ -228,7 +228,7 @@ def render_content_file(path: Path, item: dict[str, Any]) -> str:
 
 
 _PAGE_BOUNDARY_RE = re.compile(
-    r"^[ \t]*</div>\s*<!--\s*/page\s*-->[ \t]*\r?\n?\Z",
+    r"^[ \t]*</div>[ \t]*<!--\s*/page\s*-->[ \t]*(?:\r?\n)*\Z",
     re.IGNORECASE | re.MULTILINE,
 )
 
@@ -419,6 +419,134 @@ def resolve_site_href(
     if not target_route:
         return f"../#{target}"
     return f"../{target_route}/#{target}"
+
+
+class _InternalLinkRewriter(HTMLParser):
+    def __init__(
+        self,
+        current_route: str,
+        anchor_routes: dict[str, str],
+    ) -> None:
+        super().__init__(convert_charrefs=False)
+        self.current_route = current_route
+        self.anchor_routes = anchor_routes
+        self.parts: list[str] = []
+
+    @staticmethod
+    def _render_attrs(attrs: list[tuple[str, str | None]]) -> str:
+        rendered = []
+        for key, value in attrs:
+            if value is None:
+                rendered.append(key)
+            else:
+                rendered.append(f'{key}="{escape(value, quote=True)}"')
+        return (" " + " ".join(rendered)) if rendered else ""
+
+    def _rewrite_attrs(
+        self,
+        attrs: list[tuple[str, str | None]],
+    ) -> list[tuple[str, str | None]]:
+        return [
+            (
+                key,
+                resolve_site_href(value, self.current_route, self.anchor_routes)
+                if key.lower() == "href" and value
+                else value,
+            )
+            for key, value in attrs
+        ]
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        self.parts.append(f"<{tag}{self._render_attrs(self._rewrite_attrs(attrs))}>")
+
+    def handle_startendtag(
+        self,
+        tag: str,
+        attrs: list[tuple[str, str | None]],
+    ) -> None:
+        self.parts.append(f"<{tag}{self._render_attrs(self._rewrite_attrs(attrs))}/>")
+
+    def handle_endtag(self, tag: str) -> None:
+        self.parts.append(f"</{tag}>")
+
+    def handle_data(self, data: str) -> None:
+        self.parts.append(data)
+
+    def handle_entityref(self, name: str) -> None:
+        self.parts.append(f"&{name};")
+
+    def handle_charref(self, name: str) -> None:
+        self.parts.append(f"&#{name};")
+
+    def handle_comment(self, data: str) -> None:
+        self.parts.append(f"<!--{data}-->")
+
+    def handle_decl(self, decl: str) -> None:
+        self.parts.append(f"<!{decl}>")
+
+    def handle_pi(self, data: str) -> None:
+        self.parts.append(f"<?{data}>")
+
+
+def rewrite_internal_links(
+    html: str,
+    current_route: str,
+    anchor_routes: dict[str, str],
+) -> str:
+    parser = _InternalLinkRewriter(current_route, anchor_routes)
+    try:
+        parser.feed(html)
+        parser.close()
+    except BuildError:
+        raise
+    except Exception as exc:
+        raise BuildError(f"页面链接改写失败: {current_route or '/'}: {exc}") from exc
+    return "".join(parser.parts)
+
+
+def build_page_context(
+    spec: PageSpec,
+    manifest: dict[str, Any],
+    anchor_routes: dict[str, str],
+) -> dict[str, Any]:
+    items = [
+        item for item in manifest["items"]
+        if item["kind"] in {"chapter", "lab"}
+    ]
+    entries = [
+        {
+            "id": item["id"],
+            "title": item["title"],
+            "number": str(item.get("number", "")),
+            "group": item.get("toc_group", ""),
+            "route": item["id"],
+            "href": f"../{item['id']}/",
+        }
+        for item in items
+    ]
+    current_id = spec.item_ids[0] if len(spec.item_ids) == 1 else None
+    current_index = next(
+        (index for index, item in enumerate(items) if item["id"] == current_id),
+        None,
+    )
+
+    def adjacent(offset: int) -> dict[str, str] | None:
+        if current_index is None:
+            return None
+        target_index = current_index + offset
+        if target_index < 0 or target_index >= len(entries):
+            return None
+        return entries[target_index]
+
+    return {
+        "id": current_id or spec.route or "home",
+        "title": spec.title,
+        "route": spec.route,
+        "entries": entries,
+        "previous": adjacent(-1),
+        "next": adjacent(1),
+        "anchorRoutes": anchor_routes,
+    }
 
 
 def normalize_for_compare(html: str) -> str:
