@@ -77,6 +77,7 @@ Add tests that load the real manifest and assert:
 from tools.handbook_build import (
     build_anchor_route_index,
     build_page_specs,
+    normalize_standalone_fragment,
     resolve_site_href,
 )
 
@@ -105,6 +106,19 @@ def test_resolve_site_href_keeps_local_fragment_and_rewrites_remote_fragment():
     assert resolve_site_href("#ch7-section-01", "ch7", index) == "#ch7-section-01"
     assert resolve_site_href("#cite-1", "ch7", index) == "../resources/#cite-1"
     assert resolve_site_href("https://example.com", "ch7", index) == "https://example.com"
+
+
+def test_standalone_fragment_removes_only_migration_page_boundary():
+    source = (
+        '<section id="ch3"><div>正文</div></section>\n'
+        '</div><!-- /page -->\n'
+    )
+    assert normalize_standalone_fragment(source) == (
+        '<section id="ch3"><div>正文</div></section>\n'
+    )
+    assert normalize_standalone_fragment(
+        '<section id="ch2"><div>正文</div></section>\n'
+    ) == '<section id="ch2"><div>正文</div></section>\n'
 ```
 
 - [ ] **Step 2: Run the focused tests and confirm they fail**
@@ -158,6 +172,10 @@ def resolve_site_href(
     anchor_routes: dict[str, str],
 ) -> str:
     """Resolve an internal fragment to a page-relative URL; preserve external URLs."""
+
+
+def normalize_standalone_fragment(html: str) -> str:
+    """Remove the one legacy page-boundary close emitted by migrated chunks."""
 ```
 
 Raise `BuildError` for duplicate routes, duplicate anchor ownership, missing special-page items, or an unresolved `#fragment`.
@@ -407,12 +425,17 @@ def build_site(
 For each `PageSpec`:
 
 1. concatenate only `spec.item_ids`;
-2. replace `{{BOOK_TOC}}` when present;
-3. rewrite static internal `href="#..."` values with an `HTMLParser`-based transformer;
-4. inject `window.HANDBOOK_PAGE`;
-5. write `<output_dir>/<route>/index.html`.
+2. run `normalize_standalone_fragment()` on each selected item;
+3. replace `{{BOOK_TOC}}` when present;
+4. rewrite static internal `href="#..."` values with an `HTMLParser`-based transformer;
+5. inject `window.HANDBOOK_PAGE`;
+6. write `<output_dir>/<route>/index.html`.
 
 Do not use regex to rewrite HTML attributes. Keep temporary-directory and `os.replace` publication semantics from the current `main()`.
+`normalize_standalone_fragment()` may remove only the exact trailing migration marker
+`</div><!-- /page -->`; it must not attempt general HTML repair or mutate the source
+files. Add generated-page assertions that `ch3`, `ch7`, `ch12`, `ch15`, `ch24`,
+`lab4`, and `insights` have balanced `<div>` tags.
 
 - [ ] **Step 4: Build page context deterministically**
 
