@@ -1,0 +1,357 @@
+{
+  "version": 1,
+  "items": [
+    {
+      "path": "frontmatter/learning-modes.md",
+      "id": "learningModes",
+      "kind": "frontmatter",
+      "title": "学习模式入口",
+      "toc": false
+    },
+    {
+      "path": "frontmatter/module-atlas.md",
+      "id": "moduleAtlas",
+      "kind": "frontmatter",
+      "title": "全书知识地图",
+      "toc": false
+    },
+    {
+      "path": "frontmatter/module-quiz-hub.md",
+      "id": "moduleQuizHub",
+      "kind": "frontmatter",
+      "title": "模块复盘站",
+      "toc": false
+    },
+    {
+      "path": "frontmatter/intro.md",
+      "id": "intro",
+      "kind": "frontmatter",
+      "title": "导读：如何使用这份宝典",
+      "toc": false
+    },
+    {
+      "path": "frontmatter/insights.md",
+      "id": "insights",
+      "kind": "frontmatter",
+      "title": "大牛观点导览",
+      "toc": true,
+      "toc_group": "第一篇 · 原理",
+      "number": "00"
+    },
+    {
+      "path": "parts/part1.md",
+      "id": "part1",
+      "kind": "part",
+      "title": "原理篇",
+      "toc": false
+    },
+    {
+      "path": "chapters/ch01.md",
+      "id": "ch1",
+      "kind": "chapter",
+      "title": "什么是 Agent",
+      "toc": true,
+      "toc_group": "第一篇 · 原理",
+      "number": "01"
+    },
+    {
+      "path": "chapters/ch02.md",
+      "id": "ch2",
+      "kind": "chapter",
+      "title": "Agent 的四大核心组件",
+      "toc": true,
+      "toc_group": "第一篇 · 原理",
+      "number": "02"
+    },
+    {
+      "path": "chapters/ch03.md",
+      "id": "ch3",
+      "kind": "chapter",
+      "title": "六大核心设计模式",
+      "toc": true,
+      "toc_group": "第一篇 · 原理",
+      "number": "03"
+    },
+    {
+      "path": "parts/part2.md",
+      "id": "part2",
+      "kind": "part",
+      "title": "技术篇",
+      "toc": false
+    },
+    {
+      "path": "chapters/ch04.md",
+      "id": "ch4",
+      "kind": "chapter",
+      "title": "上下文工程",
+      "toc": true,
+      "toc_group": "第二篇 · 技术",
+      "number": "04"
+    },
+    {
+      "path": "chapters/ch05.md",
+      "id": "ch5",
+      "kind": "chapter",
+      "title": "记忆系统",
+      "toc": true,
+      "toc_group": "第二篇 · 技术",
+      "number": "05"
+    },
+    {
+      "path": "chapters/ch06.md",
+      "id": "ch6",
+      "kind": "chapter",
+      "title": "MCP 模型上下文协议",
+      "toc": true,
+      "toc_group": "第二篇 · 技术",
+      "number": "06"
+    },
+    {
+      "path": "chapters/ch07.md",
+      "id": "ch7",
+      "kind": "chapter",
+      "title": "框架全景与选型",
+      "toc": true,
+      "toc_group": "第二篇 · 技术",
+      "number": "07"
+    },
+    {
+      "path": "parts/part3.md",
+      "id": "part3",
+      "kind": "part",
+      "title": "实践篇",
+      "toc": false
+    },
+    {
+      "path": "chapters/ch08.md",
+      "id": "ch8",
+      "kind": "chapter",
+      "title": "快速上手 smolagents",
+      "toc": true,
+      "toc_group": "第三篇 · 实践",
+      "number": "08"
+    },
+    {
+      "path": "chapters/ch09.md",
+      "id": "ch9",
+      "kind": "chapter",
+      "title": "工程化 PydanticAI",
+      "toc": true,
+      "toc_group": "第三篇 · 实践",
+      "number": "09"
+    },
+    {
+      "path": "chapters/ch10.md",
+      "id": "ch10",
+      "kind": "chapter",
+      "title": "Agentic RAG 实战",
+      "toc": true,
+      "toc_group": "第三篇 · 实践",
+      "number": "10"
+    },
+    {
+      "path": "chapters/ch11.md",
+      "id": "ch11",
+      "kind": "chapter",
+      "title": "评估与可观测性",
+      "toc": true,
+      "toc_group": "第三篇 · 实践",
+      "number": "11"
+    },
+    {
+      "path": "chapters/ch12.md",
+      "id": "ch12",
+      "kind": "chapter",
+      "title": "生产部署与避坑",
+      "toc": true,
+      "toc_group": "第三篇 · 实践",
+      "number": "12"
+    },
+    {
+      "path": "parts/part4.md",
+      "id": "part4",
+      "kind": "part",
+      "title": "面试篇",
+      "toc": false
+    },
+    {
+      "path": "chapters/ch13.md",
+      "id": "ch13",
+      "kind": "chapter",
+      "title": "面试高频题库",
+      "toc": true,
+      "toc_group": "第四篇 · 面试",
+      "number": "13"
+    },
+    {
+      "path": "chapters/ch14.md",
+      "id": "ch14",
+      "kind": "chapter",
+      "title": "答题框架与项目准备",
+      "toc": true,
+      "toc_group": "第四篇 · 面试",
+      "number": "14"
+    },
+    {
+      "path": "chapters/ch15.md",
+      "id": "ch15",
+      "kind": "chapter",
+      "title": "学习资源与路线图",
+      "toc": true,
+      "toc_group": "第四篇 · 面试",
+      "number": "15"
+    },
+    {
+      "path": "parts/part5.md",
+      "id": "part5",
+      "kind": "part",
+      "title": "进阶篇",
+      "toc": false
+    },
+    {
+      "path": "chapters/ch16.md",
+      "id": "ch16",
+      "kind": "chapter",
+      "title": "模型后训练 SFT/RLHF/DPO/GRPO",
+      "toc": true,
+      "toc_group": "第五篇 · 进阶",
+      "number": "16"
+    },
+    {
+      "path": "chapters/ch17.md",
+      "id": "ch17",
+      "kind": "chapter",
+      "title": "Coding Agent 架构剖析",
+      "toc": true,
+      "toc_group": "第五篇 · 进阶",
+      "number": "17"
+    },
+    {
+      "path": "chapters/ch18.md",
+      "id": "ch18",
+      "kind": "chapter",
+      "title": "评估基准全景",
+      "toc": true,
+      "toc_group": "第五篇 · 进阶",
+      "number": "18"
+    },
+    {
+      "path": "chapters/ch19.md",
+      "id": "ch19",
+      "kind": "chapter",
+      "title": "多模态与 Computer Use",
+      "toc": true,
+      "toc_group": "第五篇 · 进阶",
+      "number": "19"
+    },
+    {
+      "path": "chapters/ch20.md",
+      "id": "ch20",
+      "kind": "chapter",
+      "title": "成本延迟优化与安全对齐",
+      "toc": true,
+      "toc_group": "第五篇 · 进阶",
+      "number": "20"
+    },
+    {
+      "path": "chapters/ch21.md",
+      "id": "ch21",
+      "kind": "chapter",
+      "title": "系统化提示工程",
+      "toc": true,
+      "toc_group": "第五篇 · 进阶",
+      "number": "21"
+    },
+    {
+      "path": "chapters/ch22.md",
+      "id": "ch22",
+      "kind": "chapter",
+      "title": "高级推理与搜索式规划",
+      "toc": true,
+      "toc_group": "第五篇 · 进阶",
+      "number": "22"
+    },
+    {
+      "path": "chapters/ch23.md",
+      "id": "ch23",
+      "kind": "chapter",
+      "title": "语音与实时交互 Agent",
+      "toc": true,
+      "toc_group": "第五篇 · 进阶",
+      "number": "23"
+    },
+    {
+      "path": "chapters/ch24.md",
+      "id": "ch24",
+      "kind": "chapter",
+      "title": "云原生部署与数据飞轮",
+      "toc": true,
+      "toc_group": "第五篇 · 进阶",
+      "number": "24"
+    },
+    {
+      "path": "parts/part6.md",
+      "id": "part6",
+      "kind": "part",
+      "title": "实战工坊",
+      "toc": false
+    },
+    {
+      "path": "labs/intro.md",
+      "id": "labs-intro",
+      "kind": "lab-intro",
+      "title": "实战工坊导读",
+      "toc": false
+    },
+    {
+      "path": "labs/lab01.md",
+      "id": "lab1",
+      "kind": "lab",
+      "title": "裸写一个 Agent",
+      "toc": true,
+      "toc_group": "第六篇 · 实战工坊",
+      "number": "L1"
+    },
+    {
+      "path": "labs/lab02.md",
+      "id": "lab2",
+      "kind": "lab",
+      "title": "端到端 RAG 问答",
+      "toc": true,
+      "toc_group": "第六篇 · 实战工坊",
+      "number": "L2"
+    },
+    {
+      "path": "labs/lab03.md",
+      "id": "lab3",
+      "kind": "lab",
+      "title": "带工具的客服 Agent",
+      "toc": true,
+      "toc_group": "第六篇 · 实战工坊",
+      "number": "L3"
+    },
+    {
+      "path": "labs/lab04.md",
+      "id": "lab4",
+      "kind": "lab",
+      "title": "多 Agent 研究助手",
+      "toc": true,
+      "toc_group": "第六篇 · 实战工坊",
+      "number": "L4"
+    },
+    {
+      "path": "appendices/references.md",
+      "id": "references",
+      "kind": "appendix",
+      "title": "参考来源",
+      "toc": false
+    },
+    {
+      "path": "appendices/footer.md",
+      "id": "footer-note",
+      "kind": "appendix",
+      "title": "页脚说明",
+      "toc": false
+    }
+  ]
+}

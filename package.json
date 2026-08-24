@@ -1,0 +1,17 @@
+{
+  "name": "agent-learning-handbook",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Agent 学习手册 Markdown 构建、校验与 PDF 导出工具",
+  "scripts": {
+    "test": "python3 -m unittest tests.test_build_system -v && node --test tests/test_export_pdf.js",
+    "build": "python3 tools/build.py",
+    "pages": "python3 tools/build_pages.py",
+    "verify": "python3 tools/verify_handbook.py final",
+    "pdf": "node tools/export_pdf.js",
+    "all": "npm run build && npm run verify && npm run pdf"
+  },
+  "devDependencies": {
+    "puppeteer-core": "24.16.0"
+  }
+}
