@@ -4,43 +4,44 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Agent 学习与面试宝典 · 2026</title>
+  <title>{{PAGE_TITLE}}</title>
+  <meta name="description" content="{{PAGE_DESCRIPTION}}">
 
   <style>
     /* === Font faces === */
     @font-face {
       font-family: 'Bricolage';
-      src: url('./_shared/fonts/BricolageGrotesque-Regular.ttf') format('truetype');
+      src: url('{{ASSET_PREFIX}}/_shared/fonts/BricolageGrotesque-Regular.ttf') format('truetype');
       font-weight: 400; font-display: swap;
     }
     @font-face {
       font-family: 'Bricolage';
-      src: url('./_shared/fonts/BricolageGrotesque-Bold.ttf') format('truetype');
+      src: url('{{ASSET_PREFIX}}/_shared/fonts/BricolageGrotesque-Bold.ttf') format('truetype');
       font-weight: 700; font-display: swap;
     }
     @font-face {
       font-family: 'Lora';
-      src: url('./_shared/fonts/Lora-Regular.ttf') format('truetype');
+      src: url('{{ASSET_PREFIX}}/_shared/fonts/Lora-Regular.ttf') format('truetype');
       font-weight: 400; font-display: swap;
     }
     @font-face {
       font-family: 'Lora';
-      src: url('./_shared/fonts/Lora-Bold.ttf') format('truetype');
+      src: url('{{ASSET_PREFIX}}/_shared/fonts/Lora-Bold.ttf') format('truetype');
       font-weight: 700; font-display: swap;
     }
     @font-face {
       font-family: 'Lora';
-      src: url('./_shared/fonts/Lora-Italic.ttf') format('truetype');
+      src: url('{{ASSET_PREFIX}}/_shared/fonts/Lora-Italic.ttf') format('truetype');
       font-weight: 400; font-style: italic; font-display: swap;
     }
     @font-face {
       font-family: 'JBMono';
-      src: url('./_shared/fonts/JetBrainsMono-Regular.ttf') format('truetype');
+      src: url('{{ASSET_PREFIX}}/_shared/fonts/JetBrainsMono-Regular.ttf') format('truetype');
       font-weight: 400; font-display: swap;
     }
     @font-face {
       font-family: 'JBMono';
-      src: url('./_shared/fonts/JetBrainsMono-Bold.ttf') format('truetype');
+      src: url('{{ASSET_PREFIX}}/_shared/fonts/JetBrainsMono-Bold.ttf') format('truetype');
       font-weight: 700; font-display: swap;
     }
   </style>
@@ -91,7 +92,7 @@
     }
     .topnav .brand {
       font-family: var(--font-head); font-weight: 700; font-size: 0.95rem;
-      color: var(--ink); letter-spacing: 0.02em; white-space: nowrap;
+      color: var(--ink); letter-spacing: 0.02em; white-space: nowrap; text-decoration: none;
     }
     .topnav .brand span { color: var(--accent); }
     .topnav nav { display: flex; gap: 0.3rem; flex-wrap: wrap; }
@@ -163,7 +164,7 @@
     /* === Cover === */
     .cover {
       position: relative; background: var(--dark);
-      background-image: url('assets/hero-cover.jpg');
+      background-image: url('{{ASSET_PREFIX}}/assets/hero-cover.jpg');
       background-size: cover; background-position: center;
       color: #fff; overflow: hidden;
     }
@@ -962,7 +963,7 @@
     }
   </style>
 </head>
-<body>
+<body class="{{BODY_CLASS}}">
 
   <div class="progress-bar" id="progressBar"></div>
   <button class="to-top" id="toTop" aria-label="回到顶部">↑</button>
@@ -970,7 +971,7 @@
   <!-- ===== TOP NAV ===== -->
   <div class="topnav">
     <div class="topnav-inner">
-      <div class="brand">Agent 宝典 <span>/ 2026</span></div>
+      <a class="brand" href="{{HOME_HREF}}">Agent 宝典 <span>/ 2026</span></a>
 {{BOOK_NAV}}
       <div class="nav-tools">
         <div class="theme-picker">
@@ -997,36 +998,24 @@
     <div class="chapter-outline-links"></div>
   </aside>
 
-  <!-- ===== COVER ===== -->
-  <header class="cover">
-    <div class="cover-inner">
-      <div class="eyebrow">The Definitive Agent Handbook</div>
-      <h1>AI Agent<br>学习与<em>面试宝典</em></h1>
-      <p class="sub cjk">从原理到实战，从代码到 offer。一份面向中文开发者的系统性 Agent 学习地图——覆盖核心概念、设计模式、上下文工程、框架选型、动手实践、评估部署与面试冲刺全流程。</p>
-      <div class="cover-meta">
-        <div><b>6</b>大篇章 · 24 章</div>
-        <div><b>60+</b>面试高频题</div>
-        <div><b>2026.08</b>数据更新</div>
-        <div><b>轻量优先</b>smolagents + PydanticAI 主线</div>
-      </div>
-    </div>
-  </header>
+{{BOOK_COVER}}
 
-  <div class="page">
-
+{{CONTENT_OPEN}}
 {{BOOK_CONTENT}}
+{{CONTENT_CLOSE}}
 
-  <script src="./_shared/js/mermaid.min.js"></script>
-  <script src="./_shared/js/echarts.min.js"></script>
+  <script>window.HANDBOOK_PAGE = {{BOOK_PAGE_CONTEXT}};</script>
+  <script src="{{ASSET_PREFIX}}/_shared/js/mermaid.min.js"></script>
+  <script src="{{ASSET_PREFIX}}/_shared/js/echarts.min.js"></script>
   <script>
     if (window.mermaid) {
       mermaid.initialize({ startOnLoad: true, theme: 'neutral', securityLevel: 'loose' });
     }
   </script>
-  <script src="./assets/charts.js"></script>
-  <script src="./assets/handbook-data.js"></script>
-  <script src="./assets/handbook-interactions.js"></script>
-  <script src="./assets/learner-guide.js"></script>
+  <script src="{{ASSET_PREFIX}}/assets/charts.js"></script>
+  <script src="{{ASSET_PREFIX}}/assets/handbook-data.js"></script>
+  <script src="{{ASSET_PREFIX}}/assets/handbook-interactions.js"></script>
+  <script src="{{ASSET_PREFIX}}/assets/learner-guide.js"></script>
   <script>
   /* ============ INTERACTIVE ENGINE ============ */
   (function () {

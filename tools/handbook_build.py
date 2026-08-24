@@ -8,7 +8,7 @@ from dataclasses import dataclass
 from html import escape
 from html.parser import HTMLParser
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 from urllib.parse import unquote
 
 
@@ -280,8 +280,13 @@ def render_toc(manifest: dict[str, Any]) -> str:
     return "\n".join(lines)
 
 
-def render_top_navigation(manifest: dict[str, Any]) -> str:
+def render_top_navigation(
+    manifest: dict[str, Any],
+    href_for: Callable[[str], str] | None = None,
+    home_href: str = "#",
+) -> str:
     """Render desktop and mobile book navigation from the manifest."""
+    link_for = href_for or (lambda target: target)
     groups: list[tuple[str, list[dict[str, Any]]]] = []
     lookup: dict[str, list[dict[str, Any]]] = {}
     for item in manifest["items"]:
@@ -302,10 +307,11 @@ def render_top_navigation(manifest: dict[str, Any]) -> str:
     mobile_groups: list[str] = []
     for index, ((group, items), part, label) in enumerate(zip(groups, parts, labels), start=1):
         menu_id = f"nav-menu-part{index}"
+        part_href = escape(link_for("#" + str(part["id"])), quote=True)
         lines.extend([
             f'        <div class="nav-group" data-part-id="{escape(part["id"], quote=True)}">',
             (
-                f'          <a class="nav-trigger" href="#{escape(part["id"], quote=True)}" '
+                f'          <a class="nav-trigger" href="{part_href}" '
                 f'aria-haspopup="true" aria-controls="{menu_id}" aria-expanded="false">{label}</a>'
             ),
             f'          <div class="nav-dropdown" id="{menu_id}" role="menu" aria-label="{escape(group, quote=True)}">',
@@ -323,12 +329,15 @@ def render_top_navigation(manifest: dict[str, Any]) -> str:
             number = escape(str(item.get("number", "")))
             title = escape(str(item["title"]))
             link = f'<span class="nav-number">{number}</span><span>{title}</span>'
-            lines.append(f'            <a href="#{item_id}" role="menuitem" data-chapter-id="{item_id}">{link}</a>')
-            mobile_groups.append(f'            <a href="#{item_id}" data-chapter-id="{item_id}">{link}</a>')
+            href = escape(link_for(f"#{item_id}"), quote=True)
+            lines.append(f'            <a href="{href}" role="menuitem" data-chapter-id="{item_id}">{link}</a>')
+            mobile_groups.append(f'            <a href="{href}" data-chapter-id="{item_id}">{link}</a>')
         lines.extend(["          </div>", "        </div>"])
         mobile_groups.extend(["          </div>", "        </section>"])
+    resource_target = "#references" if href_for else "#resources"
+    resource_href = escape(link_for(resource_target), quote=True)
     lines.extend([
-        '        <a class="nav-resource" href="#resources">资源</a>',
+        f'        <a class="nav-resource" href="{resource_href}">资源</a>',
         "      </nav>",
         (
             '      <button class="icon-btn mobile-book-toggle" id="mobileBookToggle" type="button" '
@@ -336,7 +345,7 @@ def render_top_navigation(manifest: dict[str, Any]) -> str:
         ),
         '      <div class="mobile-book-nav" id="mobileBookNav" aria-label="移动端全书目录" hidden>',
         *mobile_groups,
-        '        <a class="mobile-resource" href="#resources">资源</a>',
+        f'        <a class="mobile-resource" href="{resource_href}">资源</a>',
         "      </div>",
     ])
     return "\n".join(lines)

@@ -10,6 +10,7 @@ from tools.handbook_build import (
     load_manifest,
     normalize_standalone_fragment,
     render_manifest_items,
+    render_top_navigation,
     resolve_site_href,
 )
 
@@ -80,6 +81,40 @@ class PageModelTests(unittest.TestCase):
         )
         balanced = '<section id="ch2"><div>正文</div></section>\n'
         self.assertEqual(normalize_standalone_fragment(balanced), balanced)
+
+
+class TemplateTests(unittest.TestCase):
+    def setUp(self) -> None:
+        self.manifest = load_manifest(ROOT / "content" / "book.json")
+
+    def test_handbook_template_exposes_page_placeholders(self) -> None:
+        template = (ROOT / "templates" / "handbook.html").read_text(encoding="utf-8")
+
+        for placeholder in (
+            "{{PAGE_TITLE}}",
+            "{{PAGE_DESCRIPTION}}",
+            "{{BODY_CLASS}}",
+            "{{HOME_HREF}}",
+            "{{BOOK_COVER}}",
+            "{{BOOK_PAGE_CONTEXT}}",
+            "{{CONTENT_OPEN}}",
+            "{{CONTENT_CLOSE}}",
+        ):
+            self.assertEqual(template.count(placeholder), 1, placeholder)
+        self.assertGreater(template.count("{{ASSET_PREFIX}}"), 1)
+
+    def test_navigation_uses_site_routes_when_resolver_is_provided(self) -> None:
+        rendered = render_manifest_items(ROOT, self.manifest)
+        anchor_routes = build_anchor_route_index(self.manifest, rendered)
+        navigation = render_top_navigation(
+            self.manifest,
+            href_for=lambda href: resolve_site_href(href, "ch7", anchor_routes),
+            home_href="../",
+        )
+
+        self.assertIn('href="#ch7"', navigation)
+        self.assertIn('href="../resources/#references"', navigation)
+        self.assertIn('href="../ch1/"', navigation)
 
 
 if __name__ == "__main__":
