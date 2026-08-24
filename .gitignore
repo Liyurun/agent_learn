@@ -1,6 +1,7 @@
 node_modules/
 .venv/
 venv/
+.superpowers/
 dist/
 __pycache__/
 *.py[cod]

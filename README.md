@@ -37,8 +37,8 @@ CHROME_PATH=/absolute/path/to/chrome npm run pdf
 ```bash
 npm test          # 单元测试
 npm run build     # 生成 HTML
-npm run pages     # 生成 GitHub Pages 发布目录 dist/
-npm run verify    # 校验清单、锚点、链接、标签和资源
+npm run pages     # 生成多页面 GitHub Pages 发布目录 dist/
+npm run verify    # 校验清单、完整 HTML 和已有的 Pages 产物
 npm run pdf       # 从 HTML 导出 PDF
 npm run all       # build → verify → pdf
 python3 tools/verify_handbook.py source  # 只校验内容清单与源文件
@@ -48,6 +48,27 @@ python3 tools/verify_handbook.py final   # 校验源文件与最终 HTML
 以上 `npm run ...` 命令请在项目目录中执行；如果当前不在项目目录，可使用
 `npm --prefix /path/to/agent-learning-handbook run all`。Python 工具按脚本自身位置
 定位项目根目录，因此也可以通过脚本的绝对路径从其他目录调用。
+
+## 多页面站点
+
+GitHub Pages 首页是交互式学习星图，只包含导航数据，不加载整本正文。正文按独立
+路径发布，例如：
+
+```text
+/ch7/        第 7 章：框架全景与选型
+/lab2/       Lab 2：端到端 RAG 问答
+/resources/  参考来源
+```
+
+本地构建并预览：
+
+```bash
+npm run pages
+python3 -m http.server 4173 --directory dist
+```
+
+然后访问 `http://localhost:4173/`。`npm run build` 仍生成完整单文件 HTML，
+供离线阅读和 PDF 导出使用。
 
 ## 修改现有章节
 
@@ -100,7 +121,7 @@ python3 tools/split_html.py --source agent-learning-handbook.html --force
 
 1. 安装 Python 与 Node 依赖。
 2. 运行 `npm test`。
-3. 执行 `npm run pages`，生成 `dist/index.html`、`dist/assets/`、`dist/_shared/` 和 PDF。
+3. 执行 `npm run pages`，生成星图首页、独立内容路由、静态资源、sitemap 和 PDF。
 4. 执行 `npm run verify`。
 5. 将 `dist/` 发布到 GitHub Pages。
 
