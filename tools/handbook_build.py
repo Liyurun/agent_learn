@@ -4,10 +4,12 @@ from __future__ import annotations
 
 import json
 import re
+from dataclasses import dataclass
 from html import escape
 from html.parser import HTMLParser
 from pathlib import Path
 from typing import Any
+from urllib.parse import unquote
 
 
 GENERATED_COMMENT = "<!-- GENERATED FILE: 请修改 content/、templates/ 或 assets/，不要直接编辑本文件。 -->"
@@ -15,10 +17,35 @@ CONTENT_PLACEHOLDER = "{{BOOK_CONTENT}}"
 TOC_PLACEHOLDER = "{{BOOK_TOC}}"
 NAV_PLACEHOLDER = "{{BOOK_NAV}}"
 REQUIRED_FIELDS = ("path", "id", "kind", "title", "toc")
+PART_ROUTE_ALIASES = {
+    "part1": "ch1",
+    "part2": "ch4",
+    "part3": "ch8",
+    "part4": "ch13",
+    "part5": "ch16",
+    "part6": "labs",
+}
 
 
 class BuildError(ValueError):
     """A user-facing build configuration error."""
+
+
+@dataclass(frozen=True)
+class PageSpec:
+    route: str
+    title: str
+    item_ids: tuple[str, ...]
+
+
+SPECIAL_PAGES = (
+    PageSpec("", "学习星图", ()),
+    PageSpec("guide", "学习导读", ("learningModes", "moduleAtlas", "intro")),
+    PageSpec("quiz", "模块复盘", ("moduleQuizHub",)),
+    PageSpec("insights", "大牛观点", ("insights",)),
+    PageSpec("labs", "实战工坊", ("labs-intro",)),
+    PageSpec("resources", "参考资源", ("references", "footer-note")),
+)
 
 
 def load_manifest(path: Path) -> dict[str, Any]:
@@ -47,6 +74,29 @@ def load_manifest(path: Path) -> dict[str, Any]:
         seen_paths.add(item["path"])
         seen_ids.add(item["id"])
     return data
+
+
+def build_page_specs(manifest: dict[str, Any]) -> list[PageSpec]:
+    items = manifest["items"]
+    item_ids = {item["id"] for item in items}
+    for spec in SPECIAL_PAGES:
+        missing = set(spec.item_ids) - item_ids
+        if missing:
+            raise BuildError(
+                f"页面 {spec.route or '/'} 缺少内容项: {', '.join(sorted(missing))}"
+            )
+
+    specs = list(SPECIAL_PAGES)
+    specs.extend(
+        PageSpec(item["id"], item["title"], (item["id"],))
+        for item in items
+        if item["kind"] in {"chapter", "lab"}
+    )
+    routes = [spec.route for spec in specs]
+    duplicates = sorted({route for route in routes if routes.count(route) > 1})
+    if duplicates:
+        raise BuildError(f"重复页面路由: {', '.join(duplicates)}")
+    return specs
 
 
 class _NativeBlockParser(HTMLParser):
@@ -177,6 +227,24 @@ def render_content_file(path: Path, item: dict[str, Any]) -> str:
     return rendered
 
 
+_PAGE_BOUNDARY_RE = re.compile(
+    r"^[ \t]*</div>\s*<!--\s*/page\s*-->[ \t]*\r?\n?\Z",
+    re.IGNORECASE | re.MULTILINE,
+)
+
+
+def normalize_standalone_fragment(html: str) -> str:
+    """Remove the legacy cross-file page close from an isolated content item."""
+    return _PAGE_BOUNDARY_RE.sub("", html)
+
+
+def render_manifest_items(root: Path, manifest: dict[str, Any]) -> dict[str, str]:
+    return {
+        item["id"]: render_content_file(root / "content" / item["path"], item)
+        for item in manifest["items"]
+    }
+
+
 def replace_single_placeholder(template: str, placeholder: str, value: str) -> str:
     count = template.count(placeholder)
     if count != 1:
@@ -289,6 +357,59 @@ def extract_anchor_ids(html: str) -> list[str]:
     parser = _IdParser()
     parser.feed(html)
     return parser.ids
+
+
+def build_anchor_route_index(
+    manifest: dict[str, Any],
+    rendered_items: dict[str, str],
+) -> dict[str, str]:
+    index: dict[str, str] = {}
+    for spec in build_page_specs(manifest):
+        for item_id in spec.item_ids:
+            try:
+                html = rendered_items[item_id]
+            except KeyError as exc:
+                raise BuildError(f"缺少已渲染内容项: {item_id}") from exc
+            for anchor in extract_anchor_ids(normalize_standalone_fragment(html)):
+                previous = index.get(anchor)
+                if previous is not None and previous != spec.route:
+                    raise BuildError(
+                        f"锚点 {anchor} 同时属于页面 {previous} 和 {spec.route}"
+                    )
+                index[anchor] = spec.route
+
+    routes = {spec.route for spec in build_page_specs(manifest)}
+    for anchor, route in PART_ROUTE_ALIASES.items():
+        if route not in routes:
+            raise BuildError(f"分篇锚点 {anchor} 指向不存在路由: {route}")
+        index[anchor] = route
+    return index
+
+
+def resolve_site_href(
+    href: str,
+    current_route: str,
+    anchor_routes: dict[str, str],
+) -> str:
+    if not href.startswith("#") or href == "#":
+        return href
+    target = unquote(href[1:])
+    try:
+        target_route = anchor_routes[target]
+    except KeyError as exc:
+        raise BuildError(f"内部链接目标不存在: #{target}") from exc
+
+    if target in PART_ROUTE_ALIASES:
+        if target_route == current_route:
+            return "./"
+        return f"./{target_route}/" if not current_route else f"../{target_route}/"
+    if target_route == current_route:
+        return f"#{target}"
+    if not current_route:
+        return f"./{target_route}/#{target}"
+    if not target_route:
+        return f"../#{target}"
+    return f"../{target_route}/#{target}"
 
 
 def normalize_for_compare(html: str) -> str:
