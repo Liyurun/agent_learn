@@ -13,12 +13,18 @@
 
 ## 环境准备
 
-需要 Python 3.10+、Node.js 18+ 与 Chromium/Chrome。
+需要 Python 3.10+、Node.js 18+ 与 Chromium/Chrome。建议使用项目内虚拟环境安装
+Python 依赖，避免 macOS/Homebrew 的 PEP 668 全局安装限制。
 
 ```bash
-python3 -m pip install -r requirements.txt
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt
 npm install
 ```
+
+激活虚拟环境后再执行 `npm test`、`npm run build`、`npm run pages` 等命令；
+脚本中的 `python3` 会使用虚拟环境提供的解释器。
 
 如 Chromium 不在系统路径，可指定：
 
