@@ -33,6 +33,8 @@ def main() -> int:
         copy_tree(ROOT / "_shared", temp_dir / "_shared")
         if PDF_PATH.is_file():
             shutil.copy2(PDF_PATH, temp_dir / PDF_PATH.name)
+        if DIST_PATH.exists():
+            shutil.rmtree(DIST_PATH)
         os.replace(temp_dir, DIST_PATH)
     except Exception:
         shutil.rmtree(temp_dir, ignore_errors=True)
