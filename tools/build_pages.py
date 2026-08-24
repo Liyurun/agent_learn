@@ -162,6 +162,26 @@ def write_learning_map(
     target.write_text(html, encoding="utf-8", newline="")
 
 
+def write_sitemap(output_dir: Path, routes: list[str], site_url: str | None) -> None:
+    base_url = (site_url or "http://localhost/").rstrip("/") + "/"
+    locations = [
+        base_url if not route else f"{base_url}{route}/"
+        for route in routes
+    ]
+    lines = [
+        '<?xml version="1.0" encoding="UTF-8"?>',
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+        *(f"  <url><loc>{escape(location)}</loc></url>" for location in locations),
+        "</urlset>",
+        "",
+    ]
+    (output_dir / "sitemap.xml").write_text(
+        "\n".join(lines),
+        encoding="utf-8",
+        newline="",
+    )
+
+
 def build_site(
     output_dir: Path = DIST_PATH,
     site_url: str | None = None,
@@ -207,6 +227,7 @@ def build_site(
         target.write_text(html, encoding="utf-8", newline="")
         outputs[spec.route] = target
 
+    write_sitemap(output_dir, list(outputs), site_url)
     copy_tree(ROOT / "assets", output_dir / "assets")
     copy_tree(ROOT / "_shared", output_dir / "_shared")
     if PDF_PATH.is_file():

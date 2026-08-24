@@ -4,7 +4,7 @@
   "private": true,
   "description": "Agent 学习手册 Markdown 构建、校验与 PDF 导出工具",
   "scripts": {
-    "test": "python3 -m unittest tests.test_build_system -v && node --test tests/test_export_pdf.js",
+    "test": "python3 -m unittest tests.test_build_system tests.test_pages_site -v && node --test tests/test_export_pdf.js",
     "build": "python3 tools/build.py",
     "pages": "python3 tools/build_pages.py",
     "verify": "python3 tools/verify_handbook.py final",

@@ -18,6 +18,7 @@ from tools.handbook_build import (
     resolve_site_href,
 )
 from tools.build_pages import build_site
+from tools.verify_handbook import verify_site
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -219,6 +220,46 @@ class ClientContractTests(unittest.TestCase):
         self.assertEqual(context["entries"][6]["id"], "ch7")
         self.assertEqual(context["previous"]["href"], "../ch6/")
         self.assertEqual(context["next"]["href"], "../ch8/")
+
+
+class SiteVerifyTests(unittest.TestCase):
+    def test_generated_site_and_sitemap_are_valid(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            output = Path(tmp)
+            build_site(
+                output_dir=output,
+                site_url="https://example.test/book/",
+            )
+
+            self.assertEqual(verify_site(output), [])
+            sitemap = (output / "sitemap.xml").read_text(encoding="utf-8")
+            self.assertIn("https://example.test/book/", sitemap)
+            self.assertIn("https://example.test/book/ch24/", sitemap)
+            self.assertIn("https://example.test/book/lab4/", sitemap)
+
+    def test_site_verifier_reports_missing_route(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            output = Path(tmp)
+            build_site(output_dir=output)
+            (output / "ch24" / "index.html").unlink()
+
+            errors = verify_site(output)
+
+            self.assertTrue(any("缺少页面路由: ch24" in error for error in errors))
+
+    def test_site_verifier_reports_broken_cross_page_target(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            output = Path(tmp)
+            build_site(output_dir=output)
+            chapter = output / "ch7" / "index.html"
+            chapter.write_text(
+                '<!-- GENERATED FILE: test --><a href="../missing/#x">broken</a>',
+                encoding="utf-8",
+            )
+
+            errors = verify_site(output)
+
+            self.assertTrue(any("目标页面不存在" in error for error in errors))
 
 
 if __name__ == "__main__":
