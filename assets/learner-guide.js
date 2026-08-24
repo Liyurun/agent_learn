@@ -387,6 +387,8 @@
     // 收集正文章节（ch1..ch24），保持 DOM 顺序
     var chapters = Array.prototype.slice.call(document.querySelectorAll('section.chapter'))
       .filter(function (s) { return /^ch\d+$/.test(s.id) && GUIDE[s.id]; });
+    var page = window.HANDBOOK_PAGE || {};
+    var entries = Array.isArray(page.entries) ? page.entries : [];
 
     if (!chapters.length) return;
 
@@ -395,7 +397,11 @@
     try { readState = JSON.parse(localStorage.getItem(READ_KEY) || '{}') || {}; } catch (e) { readState = {}; }
     function saveRead() { try { localStorage.setItem(READ_KEY, JSON.stringify(readState)); } catch (e) {} }
 
-    var total = chapters.length;
+    var total = entries.length || chapters.length;
+
+    if (page.route && /^ch\d+$/.test(page.id)) {
+      try { localStorage.setItem('ah-last-chapter', page.id); } catch (e) {}
+    }
 
     function titleOf(section) {
       var h = $('.chap-title', section);
@@ -413,6 +419,10 @@
 
       var minutes = estimateMinutes(section);
       var lv = LEVEL[data.level] || LEVEL.mid;
+      var globalIndex = entries.findIndex(function (entry) {
+        return entry.id === section.id;
+      });
+      var displayIndex = globalIndex >= 0 ? globalIndex + 1 : idx + 1;
 
       /* ---------- 章首导学卡 ---------- */
       var opener = el('div', 'lg-opener');
@@ -421,7 +431,7 @@
         '<div class="lg-meta">' +
           '<span class="lg-badge lg-' + lv.cls + '">难度 · ' + lv.label + '</span>' +
           '<span class="lg-badge lg-time">⏱ 约 ' + minutes + ' 分钟</span>' +
-          '<span class="lg-badge lg-idx">第 ' + (idx + 1) + ' / ' + total + ' 章</span>' +
+          '<span class="lg-badge lg-idx">第 ' + displayIndex + ' / ' + total + ' 章</span>' +
         '</div>' +
         '<div class="lg-hook"><span class="lg-hook-mark">导读</span>' + data.hook + '</div>' +
         '<div class="lg-goals">' +
@@ -432,13 +442,19 @@
       /* ---------- 章末小结卡 + 上/下章导航 ---------- */
       var prev = chapters[idx - 1];
       var next = chapters[idx + 1];
+      var prevPage = page.id === section.id ? page.previous : null;
+      var nextPage = page.id === section.id ? page.next : null;
+      var prevHref = prevPage ? prevPage.href : (prev ? '#' + prev.id : null);
+      var nextHref = nextPage ? nextPage.href : (next ? '#' + next.id : null);
+      var prevTitle = prevPage ? prevPage.title : (prev ? titleOf(prev) : '');
+      var nextTitle = nextPage ? nextPage.title : (next ? titleOf(next) : '');
       var navHtml = '<div class="lg-nav">';
-      navHtml += prev
-        ? '<a class="lg-nav-btn prev" href="#' + prev.id + '"><span>← 上一章</span><b>' + titleOf(prev) + '</b></a>'
+      navHtml += prevHref
+        ? '<a class="lg-nav-btn prev" href="' + prevHref + '"><span>← 上一章</span><b>' + prevTitle + '</b></a>'
         : '<span class="lg-nav-btn ghost"></span>';
       navHtml += '<button class="lg-read-btn" data-read="' + section.id + '">✓ 标记学完</button>';
-      navHtml += next
-        ? '<a class="lg-nav-btn next" href="#' + next.id + '"><span>下一章 →</span><b>' + titleOf(next) + '</b></a>'
+      navHtml += nextHref
+        ? '<a class="lg-nav-btn next" href="' + nextHref + '"><span>下一章 →</span><b>' + nextTitle + '</b></a>'
         : '<span class="lg-nav-btn ghost"></span>';
       navHtml += '</div>';
 

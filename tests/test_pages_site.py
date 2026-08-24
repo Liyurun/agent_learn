@@ -9,6 +9,7 @@ from pathlib import Path
 from tools.handbook_build import (
     BuildError,
     build_anchor_route_index,
+    build_page_context,
     build_page_specs,
     load_manifest,
     normalize_standalone_fragment,
@@ -189,6 +190,35 @@ class StarmapTests(unittest.TestCase):
                 sum(len(group["entries"]) for group in data["groups"]),
                 28,
             )
+
+
+class ClientContractTests(unittest.TestCase):
+    def test_client_scripts_support_page_context(self) -> None:
+        interactions = (ROOT / "assets" / "handbook-interactions.js").read_text(
+            encoding="utf-8"
+        )
+        learner_guide = (ROOT / "assets" / "learner-guide.js").read_text(
+            encoding="utf-8"
+        )
+
+        self.assertIn("window.HANDBOOK_PAGE", interactions)
+        self.assertIn("resolveInternalHref", interactions)
+        self.assertIn("'ah-last-chapter'", learner_guide)
+        self.assertIn("page.previous", learner_guide)
+        self.assertIn("page.next", learner_guide)
+
+    def test_chapter_page_context_uses_global_order(self) -> None:
+        manifest = load_manifest(ROOT / "content" / "book.json")
+        rendered = render_manifest_items(ROOT, manifest)
+        routes = build_anchor_route_index(manifest, rendered)
+        ch7 = next(spec for spec in build_page_specs(manifest) if spec.route == "ch7")
+
+        context = build_page_context(ch7, manifest, routes)
+
+        self.assertEqual(len(context["entries"]), 28)
+        self.assertEqual(context["entries"][6]["id"], "ch7")
+        self.assertEqual(context["previous"]["href"], "../ch6/")
+        self.assertEqual(context["next"]["href"], "../ch8/")
 
 
 if __name__ == "__main__":

@@ -3,9 +3,29 @@
 
   // Shared cross-widget focus bridge: 观点墙 <-> 进阶章节 双向锚点
   var insightBridge = { focus: null };
+  var pageContext = window.HANDBOOK_PAGE || {};
 
   function $(selector, root) {
     return (root || document).querySelector(selector);
+  }
+
+  function resolveInternalHref(href) {
+    if (!href || href.charAt(0) !== '#') return href;
+    var target = href.slice(1);
+    var route = pageContext.anchorRoutes && pageContext.anchorRoutes[target];
+    if (!route) return href;
+    if (/^part\d+$/.test(target)) {
+      return route === pageContext.route ? './' : '../' + route + '/';
+    }
+    if (route === pageContext.route) return href;
+    return '../' + route + '/#' + encodeURIComponent(target);
+  }
+
+  function rewriteInternalLinks() {
+    Array.prototype.slice.call(document.querySelectorAll('a[href^="#"]')).forEach(function (link) {
+      var resolved = resolveInternalHref(link.getAttribute('href'));
+      if (resolved !== link.getAttribute('href')) link.setAttribute('href', resolved);
+    });
   }
 
   function escapeHtml(value) {
@@ -364,6 +384,12 @@
     };
 
     paint();
+    var requested = decodeURIComponent(window.location.hash.slice(1));
+    if (requested.indexOf('insight-') === 0) {
+      window.requestAnimationFrame(function () {
+        insightBridge.focus(requested.slice('insight-'.length));
+      });
+    }
   }
 
   // 反向链接：在进阶章节顶部渲染“相关大牛观点”跳转条。
@@ -386,8 +412,11 @@
         '<div class="insight-backlink">',
         '<span class="backlink-label">💬 相关大牛观点</span>',
         items.map(function (item) {
-          return '<button type="button" class="backlink-chip" data-insight-focus="' + escapeHtml(item.id) + '">' +
-            escapeHtml(item.author) + '：' + escapeHtml(item.punch) + '</button>';
+          var href = pageContext.route
+            ? '../insights/#insight-' + encodeURIComponent(item.id)
+            : '#insight-' + encodeURIComponent(item.id);
+          return '<a class="backlink-chip" href="' + escapeHtml(href) + '" data-insight-focus="' + escapeHtml(item.id) + '">' +
+            escapeHtml(item.author) + '：' + escapeHtml(item.punch) + '</a>';
         }).join(''),
         '</div>'
       ].join('');
@@ -397,9 +426,11 @@
     document.addEventListener('click', function (event) {
       var btn = event.target.closest ? event.target.closest('[data-insight-focus]') : null;
       if (!btn) return;
-      event.preventDefault();
       var id = btn.getAttribute('data-insight-focus');
-      if (insightBridge.focus) insightBridge.focus(id);
+      if (insightBridge.focus) {
+        event.preventDefault();
+        insightBridge.focus(id);
+      }
     });
   }
 
@@ -993,6 +1024,13 @@
     renderInlineQuiz($('#postTrainingQuiz'), data.postTrainingQuizzes, '🧪 后训练小测', '判断该用哪种后训练/替代方案，点选项看解析。');
     renderInlineQuiz($('#benchmarkQuiz'), data.benchmarkQuizzes, '🧪 评估基准小测', '选对基准、选对指标，才能做出可信评估。');
     bindAllQuizzes(document);
+    rewriteInternalLinks();
+    if ('MutationObserver' in window) {
+      new MutationObserver(rewriteInternalLinks).observe(document.body, {
+        childList: true,
+        subtree: true
+      });
+    }
   }
 
   if (document.readyState === 'loading') {

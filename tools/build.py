@@ -11,20 +11,36 @@ from html import escape
 from pathlib import Path
 from typing import Any, Callable
 
-from handbook_build import (
-    CONTENT_PLACEHOLDER,
-    GENERATED_COMMENT,
-    NAV_PLACEHOLDER,
-    TOC_PLACEHOLDER,
-    BuildError,
-    extract_anchor_ids,
-    load_manifest,
-    normalize_for_compare,
-    render_manifest_items,
-    render_toc,
-    render_top_navigation,
-    replace_single_placeholder,
-)
+try:
+    from .handbook_build import (
+        CONTENT_PLACEHOLDER,
+        GENERATED_COMMENT,
+        NAV_PLACEHOLDER,
+        TOC_PLACEHOLDER,
+        BuildError,
+        extract_anchor_ids,
+        load_manifest,
+        normalize_for_compare,
+        render_manifest_items,
+        render_toc,
+        render_top_navigation,
+        replace_single_placeholder,
+    )
+except ImportError:  # Direct script execution: python3 tools/build.py
+    from handbook_build import (
+        CONTENT_PLACEHOLDER,
+        GENERATED_COMMENT,
+        NAV_PLACEHOLDER,
+        TOC_PLACEHOLDER,
+        BuildError,
+        extract_anchor_ids,
+        load_manifest,
+        normalize_for_compare,
+        render_manifest_items,
+        render_toc,
+        render_top_navigation,
+        replace_single_placeholder,
+    )
 
 
 ROOT = Path(__file__).resolve().parents[1]
