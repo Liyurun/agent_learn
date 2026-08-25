@@ -7,6 +7,7 @@
   <title>{{PAGE_TITLE}}</title>
   <meta name="description" content="{{PAGE_DESCRIPTION}}">
   <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="{{ASSET_PREFIX}}/assets/unified-search.css">
 
   <style>
     /* === Font faces === */
@@ -964,7 +965,7 @@
     }
   </style>
 </head>
-<body class="{{BODY_CLASS}}">
+<body class="{{BODY_CLASS}}" data-site-root="{{ASSET_PREFIX}}/">
 
   <div class="progress-bar" id="progressBar"></div>
   <button class="to-top" id="toTop" aria-label="回到顶部">↑</button>
@@ -975,6 +976,8 @@
       <a class="brand" href="{{HOME_HREF}}">Agent 宝典 <span>/ 2026</span></a>
 {{BOOK_NAV}}
       <div class="nav-tools">
+        <button class="icon-btn search-trigger" type="button" data-search-open
+                aria-haspopup="dialog" aria-controls="unifiedSearch">搜索</button>
         <div class="theme-picker">
           <button class="icon-btn" id="themeToggle" type="button" aria-haspopup="menu" aria-controls="themeMenu" aria-expanded="false">◐ 主题</button>
           <div class="theme-menu" id="themeMenu" role="menu" aria-label="阅读主题" hidden>
@@ -1005,6 +1008,27 @@
 {{BOOK_CONTENT}}
 {{CONTENT_CLOSE}}
 
+  <dialog id="unifiedSearch" class="unified-search">
+    <div class="unified-search-shell">
+      <form class="unified-search-head" method="dialog">
+        <strong>搜索双轨手册</strong>
+        <button class="unified-search-close" aria-label="关闭搜索">×</button>
+      </form>
+      <input type="search" placeholder="搜索概念、框架、代码或面试题"
+             aria-label="搜索手册">
+      <div class="unified-search-filters" role="group" aria-label="搜索范围">
+        <button type="button" data-filter="all" aria-pressed="true">全部</button>
+        <button type="button" data-filter="concise" aria-pressed="false">精炼版</button>
+        <button type="button" data-filter="advanced" aria-pressed="false">进阶完整版</button>
+        <button type="button" data-filter="code" aria-pressed="false">代码示例</button>
+        <button type="button" data-filter="interview" aria-pressed="false">面试题</button>
+      </div>
+      <div class="unified-search-results-wrap">
+        <p class="unified-search-status" aria-live="polite" data-search-status>打开搜索后加载索引</p>
+        <ol class="unified-search-results" data-search-results></ol>
+      </div>
+    </div>
+  </dialog>
   <script>window.HANDBOOK_PAGE = {{BOOK_PAGE_CONTEXT}};</script>
   <script src="{{ASSET_PREFIX}}/_shared/js/mermaid.min.js"></script>
   <script src="{{ASSET_PREFIX}}/_shared/js/echarts.min.js"></script>
@@ -1017,6 +1041,7 @@
   <script src="{{ASSET_PREFIX}}/assets/handbook-data.js"></script>
   <script src="{{ASSET_PREFIX}}/assets/handbook-interactions.js"></script>
   <script src="{{ASSET_PREFIX}}/assets/learner-guide.js"></script>
+  <script src="{{ASSET_PREFIX}}/assets/unified-search.js"></script>
   <script>
   /* ============ INTERACTIVE ENGINE ============ */
   (function () {

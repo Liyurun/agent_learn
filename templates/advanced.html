@@ -8,6 +8,7 @@
   <link rel="icon" href="data:,">
   <title>{{HTML_TITLE}}</title>
   <link rel="stylesheet" href="{{ADVANCED_STYLE_HREF}}">
+  <link rel="stylesheet" href="{{UNIFIED_SEARCH_STYLE_HREF}}">
 </head>
 <body class="advanced-page" data-page-id="{{PAGE_ID}}" data-site-root="{{SITE_ROOT}}">
   <a class="skip-link" href="#main-content">跳到正文</a>
@@ -15,6 +16,8 @@
     <a class="advanced-brand" href="{{BRAND_HOME_HREF}}">Agent <strong>知识图谱</strong><span>/ Advanced</span></a>
     <nav class="advanced-topnav" aria-label="站点导航">
       <a href="{{MAP_HOME_HREF}}">全局星图</a>
+      <button class="search-trigger" type="button" data-search-open
+              aria-haspopup="dialog" aria-controls="unifiedSearch">搜索</button>
       <button class="advanced-nav-button" id="advancedBookToggle" type="button"
               aria-controls="advancedBookNav" aria-expanded="false">目录</button>
       <button class="advanced-nav-button" id="advancedTocToggle" type="button"
@@ -41,6 +44,7 @@
                 aria-pressed="false">标记本节完成</button>
       </header>
       <article class="advanced-prose">{{PAGE_CONTENT}}</article>
+      {{RELATED_READING}}
       {{PAGE_FOOTER}}
     </main>
 
@@ -59,7 +63,29 @@
   </div>
 
   <div class="advanced-backdrop" id="advancedBackdrop" hidden></div>
+  <dialog id="unifiedSearch" class="unified-search">
+    <div class="unified-search-shell">
+      <form class="unified-search-head" method="dialog">
+        <strong>搜索双轨手册</strong>
+        <button class="unified-search-close" aria-label="关闭搜索">×</button>
+      </form>
+      <input type="search" placeholder="搜索概念、框架、代码或面试题"
+             aria-label="搜索手册">
+      <div class="unified-search-filters" role="group" aria-label="搜索范围">
+        <button type="button" data-filter="all" aria-pressed="true">全部</button>
+        <button type="button" data-filter="concise" aria-pressed="false">精炼版</button>
+        <button type="button" data-filter="advanced" aria-pressed="false">进阶完整版</button>
+        <button type="button" data-filter="code" aria-pressed="false">代码示例</button>
+        <button type="button" data-filter="interview" aria-pressed="false">面试题</button>
+      </div>
+      <div class="unified-search-results-wrap">
+        <p class="unified-search-status" aria-live="polite" data-search-status>打开搜索后加载索引</p>
+        <ol class="unified-search-results" data-search-results></ol>
+      </div>
+    </div>
+  </dialog>
   <script>window.ADVANCED_PAGE = {{PAGE_CONTEXT}};</script>
   <script src="{{ADVANCED_SCRIPT_HREF}}"></script>
+  <script src="{{UNIFIED_SEARCH_SCRIPT_HREF}}"></script>
 </body>
 </html>

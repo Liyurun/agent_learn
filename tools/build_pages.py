@@ -30,12 +30,13 @@ try:
         rewrite_internal_links,
     )
     from .knowledge_graph import (
-        build_advanced_graph,
-        build_concise_graph,
+        build_combined_graph,
         graph_to_dict,
         load_relations,
+        load_track_mapping,
         with_relations,
     )
+    from .search_index import build_search_documents
 except ImportError:  # Direct script execution: python3 tools/build_pages.py
     from advanced_content import (
         load_advanced_manifest,
@@ -57,12 +58,13 @@ except ImportError:  # Direct script execution: python3 tools/build_pages.py
         rewrite_internal_links,
     )
     from knowledge_graph import (
-        build_advanced_graph,
-        build_concise_graph,
+        build_combined_graph,
         graph_to_dict,
         load_relations,
+        load_track_mapping,
         with_relations,
     )
+    from search_index import build_search_documents
 
 
 DIST_PATH = ROOT / "dist"
@@ -70,6 +72,7 @@ PDF_PATH = ROOT / "Agent学习与面试宝典.pdf"
 MANIFEST_PATH = ROOT / "content" / "book.json"
 ADVANCED_MANIFEST_PATH = ROOT / "content" / "advanced" / "manifest.json"
 ADVANCED_RELATIONS_PATH = ROOT / "content" / "advanced" / "relations.json"
+TRACK_MAPPING_PATH = ROOT / "content" / "track-mapping.json"
 HANDBOOK_TEMPLATE_PATH = ROOT / "templates" / "handbook.html"
 ADVANCED_TEMPLATE_PATH = ROOT / "templates" / "advanced.html"
 LEARNING_MAP_TEMPLATE_PATH = ROOT / "templates" / "learning-map.html"
@@ -109,6 +112,7 @@ def build_starmap_data(
     anchor_routes: dict[str, str],
     rendered_items: dict[str, str],
     advanced_manifest,
+    track_mapping: dict[str, tuple[str, ...]],
 ) -> dict:
     grouped: list[tuple[str, list[dict]]] = []
     lookup: dict[str, list[dict]] = {}
@@ -146,15 +150,30 @@ def build_starmap_data(
                 for item in items
             ],
         })
-    concise_graph = build_concise_graph(ROOT, manifest, rendered_items)
+    combined = build_combined_graph(
+        root=ROOT,
+        concise_manifest=manifest,
+        rendered_items=rendered_items,
+        advanced_manifest=advanced_manifest,
+        mapping=track_mapping,
+    )
+    concise_graph = combined.concise
     advanced_graph = with_relations(
-        build_advanced_graph(advanced_manifest),
+        combined.advanced,
         load_relations(ADVANCED_RELATIONS_PATH),
     )
     return {
         "groups": groups,
         "anchorRoutes": anchor_routes,
         "defaultTrack": "concise",
+        "crossEdges": [
+            {
+                "source": edge.source,
+                "target": edge.target,
+                "type": edge.type,
+            }
+            for edge in combined.cross_edges
+        ],
         "tracks": {
             "concise": {
                 **graph_to_dict(concise_graph),
@@ -213,6 +232,7 @@ def write_learning_map(
     anchor_routes: dict[str, str],
     rendered_items: dict[str, str],
     advanced_manifest,
+    track_mapping: dict[str, tuple[str, ...]],
     site_url: str | None,
 ) -> None:
     template = LEARNING_MAP_TEMPLATE_PATH.read_text(encoding="utf-8")
@@ -221,6 +241,7 @@ def write_learning_map(
         anchor_routes,
         rendered_items,
         advanced_manifest,
+        track_mapping,
     )
     base_url = (site_url or "http://localhost/").rstrip("/") + "/"
     html = replace_single_placeholder(template, "{{SITE_URL}}", escape(base_url, quote=True))
@@ -262,14 +283,33 @@ def write_advanced_pages(
     output_dir: Path,
     outputs: dict[str, Path],
     manifest,
+    track_mapping: dict[str, tuple[str, ...]],
+    concise_manifest: dict,
 ) -> None:
     template = ADVANCED_TEMPLATE_PATH.read_text(encoding="utf-8")
+    concise_lookup = {
+        item["id"]: item
+        for item in concise_manifest["items"]
+        if item["kind"] in {"chapter", "lab"}
+    }
+    reverse_mapping: dict[str, list[str]] = {}
+    for concise_id, advanced_ids in track_mapping.items():
+        for advanced_id in advanced_ids:
+            reverse_mapping.setdefault(advanced_id, []).append(concise_id)
     for item in manifest.items:
+        concise_links = tuple(
+            (
+                concise_lookup[concise_id]["id"],
+                concise_lookup[concise_id]["title"],
+            )
+            for concise_id in reverse_mapping.get(item.id, ())
+        )
         html = render_advanced_page(
             root=ROOT,
             manifest=manifest,
             item=item,
             template=template,
+            concise_links=concise_links,
         )
         target = output_dir / item.route / "index.html"
         target.parent.mkdir(parents=True, exist_ok=True)
@@ -283,6 +323,7 @@ def build_site(
 ) -> dict[str, Path]:
     manifest = load_manifest(MANIFEST_PATH)
     advanced_manifest = load_advanced_manifest(ADVANCED_MANIFEST_PATH)
+    track_mapping = load_track_mapping(TRACK_MAPPING_PATH)
     rendered_items = render_manifest_items(ROOT, manifest)
     specs = build_page_specs(manifest)
     anchor_routes = build_anchor_route_index(manifest, rendered_items)
@@ -297,6 +338,7 @@ def build_site(
         anchor_routes,
         rendered_items,
         advanced_manifest,
+        track_mapping,
         site_url,
     )
     outputs[""] = home_path
@@ -305,6 +347,24 @@ def build_site(
         if not spec.route:
             continue
         content = render_page_content(spec, manifest, rendered_items, anchor_routes)
+        advanced_lookup = {
+            item.id: item
+            for item in advanced_manifest.items
+        }
+        mapped = track_mapping.get(spec.route, ())
+        if mapped:
+            links = "".join(
+                f'<a href="../{escape(advanced_lookup[item_id].route, quote=True)}/">'
+                f"{escape(advanced_lookup[item_id].title)}</a>"
+                for item_id in mapped
+            )
+            content += (
+                '<aside class="deep-dive-links" '
+                'aria-label="进阶完整版对应阅读">'
+                "<h2>进阶完整版对应阅读</h2>"
+                f'<div class="deep-dive-link-list">{links}</div>'
+                "</aside>"
+            )
         context = build_page_context(spec, manifest, anchor_routes)
         html = render_document(
             template=template,
@@ -330,7 +390,27 @@ def build_site(
         target.write_text(html, encoding="utf-8", newline="")
         outputs[spec.route] = target
 
-    write_advanced_pages(output_dir, outputs, advanced_manifest)
+    write_advanced_pages(
+        output_dir,
+        outputs,
+        advanced_manifest,
+        track_mapping,
+        manifest,
+    )
+    search_index = {
+        "version": 1,
+        "documents": build_search_documents(
+            ROOT,
+            manifest,
+            rendered_items,
+            advanced_manifest,
+        ),
+    }
+    (output_dir / "search-index.json").write_text(
+        json.dumps(search_index, ensure_ascii=False, separators=(",", ":")),
+        encoding="utf-8",
+        newline="",
+    )
     write_sitemap(output_dir, list(outputs), site_url)
     copy_tree(ROOT / "assets", output_dir / "assets")
     copy_tree(ROOT / "_shared", output_dir / "_shared")

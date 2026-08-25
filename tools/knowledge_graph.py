@@ -17,7 +17,7 @@ except ImportError:  # Direct script execution.
 
 
 Track = Literal["concise", "advanced"]
-NodeKind = Literal["chapter", "section", "appendix"]
+NodeKind = Literal["chapter", "section", "appendix", "guide"]
 EdgeType = Literal[
     "sequence",
     "prerequisite",
@@ -83,6 +83,17 @@ class KnowledgeGraph:
     @property
     def node_ids(self) -> frozenset[str]:
         return frozenset(node.id for node in self.nodes)
+
+
+@dataclass(frozen=True)
+class CombinedKnowledgeGraph:
+    concise: KnowledgeGraph
+    advanced: KnowledgeGraph
+    cross_edges: tuple[GraphEdge, ...]
+
+    @property
+    def node_ids(self) -> frozenset[str]:
+        return self.concise.node_ids | self.advanced.node_ids
 
 
 class HeadingParser(HTMLParser):
@@ -283,6 +294,19 @@ def build_advanced_graph(manifest: AdvancedManifest) -> KnowledgeGraph:
         if section_ids:
             edges.append(GraphEdge(chapter.id, section_ids[0], "sequence"))
             edges.extend(_sequence_edges(section_ids))
+    nodes.extend(
+        GraphNode(
+            id=item.id,
+            track="advanced",
+            kind=item.kind,
+            title=item.title,
+            route=item.route,
+            parent=item.domain,
+            order=item.order,
+        )
+        for item in manifest.items
+        if item.kind in {"appendix", "guide"}
+    )
     edges.extend(_sequence_edges(list(path_ids)))
     return _validate_graph(KnowledgeGraph(
         track="advanced",
@@ -323,6 +347,52 @@ def load_relations(path: Path) -> list[dict[str, Any]]:
     if not isinstance(raw, list):
         raise BuildError("knowledge graph relations must be an array")
     return raw
+
+
+def load_track_mapping(path: Path) -> dict[str, tuple[str, ...]]:
+    try:
+        raw = json.loads(path.read_text(encoding="utf-8"))
+    except FileNotFoundError as exc:
+        raise BuildError(f"track mapping does not exist: {path}") from exc
+    except json.JSONDecodeError as exc:
+        raise BuildError(f"track mapping is invalid JSON: {exc}") from exc
+    if not isinstance(raw, dict):
+        raise BuildError("track mapping must be an object")
+    mapping: dict[str, tuple[str, ...]] = {}
+    for concise_id, targets in raw.items():
+        if not isinstance(concise_id, str) or not isinstance(targets, list):
+            raise BuildError(f"invalid track mapping entry: {concise_id}")
+        if not targets or not all(isinstance(target, str) for target in targets):
+            raise BuildError(f"invalid track mapping targets: {concise_id}")
+        mapping[concise_id] = tuple(targets)
+    return mapping
+
+
+def build_combined_graph(
+    *,
+    root: Path,
+    concise_manifest: dict[str, Any],
+    rendered_items: dict[str, str],
+    advanced_manifest: AdvancedManifest,
+    mapping: dict[str, tuple[str, ...]],
+) -> CombinedKnowledgeGraph:
+    concise = build_concise_graph(root, concise_manifest, rendered_items)
+    advanced = build_advanced_graph(advanced_manifest)
+    cross_edges: list[GraphEdge] = []
+    for source, targets in mapping.items():
+        if source not in concise.node_ids:
+            raise BuildError(f"track mapping has unknown concise source: {source}")
+        for target in targets:
+            if target not in advanced.node_ids:
+                raise BuildError(
+                    f"track mapping has unknown advanced target: {target}"
+                )
+            cross_edges.append(GraphEdge(source, target, "deep-dive"))
+    return CombinedKnowledgeGraph(
+        concise=concise,
+        advanced=advanced,
+        cross_edges=tuple(cross_edges),
+    )
 
 
 def with_relations(

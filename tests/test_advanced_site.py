@@ -21,7 +21,9 @@ from tools.handbook_build import BuildError
 from tools.handbook_build import load_manifest, render_manifest_items
 from tools.knowledge_graph import (
     build_advanced_graph,
+    build_combined_graph,
     build_concise_graph,
+    load_track_mapping,
     traverse,
     validate_relations,
 )
@@ -262,6 +264,101 @@ class DualTrackGraphPageTests(unittest.TestCase):
         self.assertIn("renderMobileChapterGraph", script)
         self.assertIn("@media (max-width: 768px)", css)
         self.assertIn("min-height: 44px", css)
+
+
+class UnifiedSearchTests(unittest.TestCase):
+    def test_index_contains_both_tracks(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            output = Path(tmp)
+            build_site(output_dir=output)
+            index = json.loads(
+                (output / "search-index.json").read_text(encoding="utf-8")
+            )
+
+        tracks = {document["track"] for document in index["documents"]}
+        self.assertEqual(tracks, {"concise", "advanced"})
+        self.assertTrue(any(
+            document["route"] == "ch4"
+            for document in index["documents"]
+        ))
+        self.assertTrue(any(
+            document["route"] == "advanced/chapter-27/context-budget"
+            for document in index["documents"]
+        ))
+
+    def test_search_script_is_lazy_and_has_all_filters(self) -> None:
+        script = (ROOT / "assets" / "unified-search.js").read_text(
+            encoding="utf-8"
+        )
+
+        self.assertIn("search-index.json", script)
+        self.assertIn('filter === "code"', script)
+        self.assertIn('filter === "interview"', script)
+        self.assertIn("dialog.addEventListener(\"toggle\"", script)
+
+    def test_every_page_family_exposes_the_shared_search_dialog(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            output = Path(tmp)
+            build_site(output_dir=output)
+            pages = (
+                output / "index.html",
+                output / "ch4" / "index.html",
+                output / "advanced/chapter-27/context-budget/index.html",
+            )
+
+            for page in pages:
+                html = page.read_text(encoding="utf-8")
+                self.assertIn('id="unifiedSearch"', html, page)
+                self.assertIn("data-site-root=", html, page)
+                self.assertIn("assets/unified-search.js", html, page)
+
+
+class TrackMappingTests(unittest.TestCase):
+    def test_mapping_targets_exist_and_progress_stays_separate(self) -> None:
+        concise_manifest = load_manifest(ROOT / "content" / "book.json")
+        rendered = render_manifest_items(ROOT, concise_manifest)
+        advanced_manifest = load_advanced_manifest(
+            ROOT / "content" / "advanced" / "manifest.json"
+        )
+        mapping = load_track_mapping(ROOT / "content" / "track-mapping.json")
+        graph = build_combined_graph(
+            root=ROOT,
+            concise_manifest=concise_manifest,
+            rendered_items=rendered,
+            advanced_manifest=advanced_manifest,
+            mapping=mapping,
+        )
+
+        self.assertTrue(all(
+            target in graph.node_ids
+            for targets in mapping.values()
+            for target in targets
+        ))
+        concise = (ROOT / "assets" / "learner-guide.js").read_text(
+            encoding="utf-8"
+        )
+        advanced = (ROOT / "assets" / "advanced.js").read_text(
+            encoding="utf-8"
+        )
+        self.assertNotIn("ah-advanced-learning-state", concise)
+        self.assertNotIn("ah-read-chapters", advanced)
+        self.assertTrue(graph.cross_edges)
+        self.assertTrue(all(
+            edge.type == "deep-dive"
+            for edge in graph.cross_edges
+        ))
+
+    def test_corresponding_reading_links_are_rendered(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            output = Path(tmp)
+            build_site(output_dir=output)
+            concise = (output / "ch4" / "index.html").read_text(encoding="utf-8")
+            advanced = (
+                output / "advanced/chapter-27/index.html"
+            ).read_text(encoding="utf-8")
+
+        self.assertIn("../advanced/chapter-27/", concise)
+        self.assertIn("../../ch4/", advanced)
 
 
 if __name__ == "__main__":

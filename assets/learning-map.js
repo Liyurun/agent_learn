@@ -71,6 +71,18 @@
       .sort(function (left, right) { return left.order - right.order; });
   }
 
+  function crossTrackNodes(data, track, chapterId) {
+    var otherTrack = track === "concise" ? "advanced" : "concise";
+    var otherNodes = indexNodes(data.tracks[otherTrack]);
+    return (data.crossEdges || []).reduce(function (related, edge) {
+      var targetId = track === "concise"
+        ? (edge.source === chapterId ? edge.target : null)
+        : (edge.target === chapterId ? edge.source : null);
+      if (targetId && otherNodes[targetId]) related.push(otherNodes[targetId]);
+      return related;
+    }, []);
+  }
+
   function nodeHref(node) {
     return "./" + node.route + "/" + (
       node.fragment ? "#" + encodeURIComponent(node.fragment) : ""
@@ -331,7 +343,7 @@
     svg.appendChild(layer);
   }
 
-  function renderChapterSubgraph(graph, chapter, state) {
+  function renderChapterSubgraph(graph, chapter, state, relatedNodes) {
     var svg = byId("chapterSubgraph");
     var list = byId("chapterSectionList");
     var title = byId("chapterGraphTitle");
@@ -349,7 +361,10 @@
         y: center.y + Math.sin(angle) * (radius + (index % 2) * 8),
       };
     });
-    svg.setAttribute("viewBox", "0 0 284 176");
+    svg.setAttribute(
+      "viewBox",
+      relatedNodes.length ? "0 0 284 220" : "0 0 284 176"
+    );
     svg.replaceChildren();
     points.forEach(function (point, index) {
       var next = points[(index + 1) % points.length];
@@ -386,6 +401,40 @@
       r: 9,
       fill: state.currentChapter === chapter.id ? "#e0a63a" : color,
     }));
+    relatedNodes.forEach(function (related, index) {
+      var spacing = 244 / Math.max(1, relatedNodes.length);
+      var point = {
+        x: 20 + spacing * (index + 0.5),
+        y: 195,
+      };
+      svg.appendChild(createSvg("line", {
+        class: "deep-dive-edge",
+        x1: center.x,
+        y1: center.y + 9,
+        x2: point.x,
+        y2: point.y - 6,
+        "data-edge-type": "deep-dive",
+      }));
+      var link = createSvg("a", {
+        href: nodeHref(related),
+        "aria-label": "跨路线阅读：" + related.title,
+      });
+      link.appendChild(createSvg("circle", {
+        class: "deep-dive-node",
+        cx: point.x,
+        cy: point.y,
+        r: 5,
+      }));
+      var label = createSvg("text", {
+        class: "deep-dive-label",
+        x: point.x,
+        y: point.y + 14,
+        "text-anchor": "middle",
+      });
+      label.textContent = related.title.slice(0, 8);
+      link.appendChild(label);
+      svg.appendChild(link);
+    });
 
     title.textContent = chapter.title;
     meta.textContent = sections.length + " 个小节 · " + (
@@ -572,6 +621,7 @@
     if (!data.tracks[track]) track = "concise";
     var selectedId = null;
     var viewport = { scale: 1, x: 0, y: 0 };
+    var showCrossTrack = false;
 
     function graph() {
       var value = data.tracks[track];
@@ -585,7 +635,12 @@
       var state = progressState(track, currentGraph);
       var chapter = indexNodes(currentGraph)[selectedId];
       if (!chapter) return;
-      renderChapterSubgraph(currentGraph, chapter, state);
+      renderChapterSubgraph(
+        currentGraph,
+        chapter,
+        state,
+        showCrossTrack ? crossTrackNodes(data, track, chapter.id) : []
+      );
       renderLegend(currentGraph, selectedId, selectChapter);
       if (!mobileOnly) {
         renderDesktopGraph(
@@ -629,7 +684,10 @@
       renderChapterSubgraph(
         currentGraph,
         indexNodes(currentGraph)[selectedId],
-        state
+        state,
+        showCrossTrack
+          ? crossTrackNodes(data, track, selectedId)
+          : []
       );
       renderLegend(currentGraph, selectedId, selectChapter);
       renderMobileDomains(currentGraph, state, selectedId, selectChapter);
@@ -658,6 +716,7 @@
     var zoomIn = byId("graphZoomIn");
     var zoomOut = byId("graphZoomOut");
     var reset = byId("graphReset");
+    var crossTrackToggle = byId("crossTrackToggle");
     if (zoomIn) zoomIn.addEventListener("click", function () { updateZoom(0.18); });
     if (zoomOut) zoomOut.addEventListener("click", function () { updateZoom(-0.18); });
     if (reset) reset.addEventListener("click", function () {
@@ -670,6 +729,16 @@
         viewport
       );
     });
+    if (crossTrackToggle) {
+      crossTrackToggle.addEventListener("click", function () {
+        showCrossTrack = !showCrossTrack;
+        crossTrackToggle.setAttribute(
+          "aria-pressed",
+          showCrossTrack ? "true" : "false"
+        );
+        selectChapter(selectedId, false);
+      });
+    }
 
     renderTrack();
     document.documentElement.classList.add("starmap-enhanced");

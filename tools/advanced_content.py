@@ -488,6 +488,7 @@ def render_advanced_page(
     manifest: AdvancedManifest,
     item: AdvancedItem,
     template: str,
+    concise_links: tuple[tuple[str, str], ...] = (),
 ) -> str:
     content, toc = render_advanced_markdown(
         root / "content" / "advanced" / item.content_path,
@@ -526,6 +527,19 @@ def render_advanced_page(
         f'<div class="next">{_page_link(item, following)}</div>'
         "</nav>"
     )
+    related_reading = ""
+    if concise_links:
+        links = "".join(
+            f'<a href="{escape(relative_route_href(item.route, route), quote=True)}">'
+            f"{escape(title)}</a>"
+            for route, title in concise_links
+        )
+        related_reading = (
+            '<aside class="deep-dive-links" aria-label="精炼版对应阅读">'
+            "<h2>精炼版速览</h2>"
+            f'<div class="deep-dive-link-list">{links}</div>'
+            "</aside>"
+        )
     replacements = {
         "{{PAGE_ID}}": escape(item.id, quote=True),
         "{{HTML_TITLE}}": escape(
@@ -540,10 +554,17 @@ def render_advanced_page(
         "{{MAP_HOME_HREF}}": asset_prefix,
         "{{ADVANCED_STYLE_HREF}}": asset_prefix + "assets/advanced.css",
         "{{ADVANCED_SCRIPT_HREF}}": asset_prefix + "assets/advanced.js",
+        "{{UNIFIED_SEARCH_STYLE_HREF}}": (
+            asset_prefix + "assets/unified-search.css"
+        ),
+        "{{UNIFIED_SEARCH_SCRIPT_HREF}}": (
+            asset_prefix + "assets/unified-search.js"
+        ),
         "{{BOOK_NAV}}": render_book_navigation(manifest, item),
         "{{BREADCRUMB}}": breadcrumb,
         "{{PAGE_CONTENT}}": content,
         "{{PAGE_TOC}}": toc,
+        "{{RELATED_READING}}": related_reading,
         "{{PAGE_FOOTER}}": footer,
         "{{PAGE_CONTEXT}}": json.dumps(
             context,

@@ -1,0 +1,20 @@
+{
+  "ch1": ["advanced-ch01", "advanced-ch03"],
+  "ch2": ["advanced-ch02"],
+  "ch3": ["advanced-ch04", "advanced-ch07", "advanced-ch10", "advanced-ch11"],
+  "ch4": ["advanced-ch27"],
+  "ch5": ["advanced-ch05"],
+  "ch6": ["advanced-ch09"],
+  "ch7": ["advanced-ch12", "advanced-ch15"],
+  "ch8": ["advanced-ch13"],
+  "ch9": ["advanced-ch14"],
+  "ch10": ["advanced-ch19", "advanced-ch26"],
+  "ch11": ["advanced-ch16", "advanced-ch17", "advanced-ch28"],
+  "ch12": ["advanced-ch18", "advanced-ch20"],
+  "ch13": ["advanced-ch21", "advanced-ch22", "advanced-ch23", "advanced-ch24", "advanced-ch25", "advanced-ch31"],
+  "ch14": ["advanced-ch25"],
+  "ch15": ["advanced-guide", "advanced-appendix-a", "advanced-appendix-b", "advanced-appendix-c", "advanced-appendix-d"],
+  "ch19": ["advanced-ch29"],
+  "ch20": ["advanced-ch18", "advanced-ch30"],
+  "ch22": ["advanced-ch04"]
+}
