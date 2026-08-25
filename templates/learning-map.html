@@ -30,7 +30,7 @@
       <div>
         <p class="starmap-eyebrow">Graph of graphs · 双轨知识宇宙</p>
         <h1>从一颗知识点，走向<br><em>完整 Agent 工程图谱</em></h1>
-        <p class="starmap-summary">每个小节是一颗星，每章是一张小图；章节之间的学习顺序与知识依赖，最终汇成整本手册的大图。</p>
+        <p class="starmap-summary">每个小节是一枚知识点，每章是一组动态分子；章节之间的学习顺序与知识依赖，最终汇成可旋转、可缩放的三维知识图谱。</p>
       </div>
       <div class="track-switcher" id="trackSwitcher" role="group" aria-label="学习路线">
         <button type="button" data-track="concise" aria-pressed="true">精炼版 <span>28 星</span></button>
@@ -40,26 +40,20 @@
 
     <section class="graph-toolbar" aria-label="图谱工具">
       <div class="graph-legend" id="constellationLegend"></div>
-      <div class="graph-controls">
-        <button class="cross-track-toggle" type="button" id="crossTrackToggle"
-                aria-pressed="false" title="显示跨路线关联">关联</button>
-        <button type="button" id="graphZoomOut" aria-label="缩小图谱" title="缩小">−</button>
-        <button type="button" id="graphReset" aria-label="复位图谱" title="复位">⌂</button>
-        <button type="button" id="graphZoomIn" aria-label="放大图谱" title="放大">＋</button>
-      </div>
     </section>
 
     <section class="knowledge-workspace starmap-desktop" aria-label="双轨学习知识图谱">
       <div class="global-graph-wrap">
-        <svg id="globalKnowledgeGraph" role="img"
-             aria-label="完整 Agent 知识图谱" viewBox="0 0 1040 620"></svg>
-        <p class="graph-key"><span>章内顺序</span><span>主学习路径</span><span>跨主题依赖</span></p>
+        <canvas id="globalKnowledgeGraph" role="img" tabindex="0"
+                aria-label="可旋转缩放的完整 Agent 知识图谱"></canvas>
+        <div id="graphTooltip" class="graph-tooltip" aria-live="polite"></div>
+        <p class="graph-key"><span>拖拽旋转</span><span>滚轮缩放</span><span>Shift 拖拽平移</span></p>
       </div>
       <aside id="constellationTrack" class="chapter-graph-panel" aria-live="polite">
-        <p class="panel-eyebrow">CHAPTER SUBGRAPH · 章节小图</p>
-        <h2 id="chapterGraphTitle">选择一章</h2>
+        <p class="panel-eyebrow">MOLECULAR PANEL · 章节分子</p>
+        <h2 id="chapterGraphTitle">完整图谱</h2>
         <p id="chapterGraphMeta" class="chapter-graph-meta"></p>
-        <svg id="chapterSubgraph" role="img" aria-label="当前章节知识图"></svg>
+        <div id="chapterEnergyCard" class="chapter-energy-card" hidden></div>
         <nav id="chapterSectionList" class="chapter-section-list" aria-label="当前章节小节"></nav>
         <a id="chapterEnterLink" class="chapter-enter-link" href="./">进入章节</a>
       </aside>

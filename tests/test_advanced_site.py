@@ -250,8 +250,9 @@ class DualTrackGraphPageTests(unittest.TestCase):
             html = (output / "index.html").read_text(encoding="utf-8")
 
         self.assertIn('id="trackSwitcher"', html)
-        self.assertIn('id="globalKnowledgeGraph"', html)
-        self.assertIn('id="chapterSubgraph"', html)
+        self.assertIn('<canvas id="globalKnowledgeGraph"', html)
+        self.assertIn('id="graphTooltip"', html)
+        self.assertIn('id="chapterEnergyCard"', html)
         self.assertIn('id="chapterSectionList"', html)
 
     def test_mobile_graph_contract_is_present(self) -> None:

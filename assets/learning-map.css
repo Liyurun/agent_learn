@@ -194,7 +194,7 @@ a {
   display: flex;
   min-height: 45px;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   gap: 18px;
   max-width: 1440px;
   margin: 0 auto;
@@ -238,49 +238,13 @@ a {
   background: currentColor;
 }
 
-.graph-controls {
-  display: flex;
-  gap: 4px;
-}
-
-.graph-controls button {
-  width: 32px;
-  height: 32px;
-  border: 1px solid var(--sky-line);
-  border-radius: 5px;
-  color: #b8c7d1;
-  background: #0b1421;
-  cursor: pointer;
-  font-size: 15px;
-}
-
-.graph-controls .cross-track-toggle {
-  width: auto;
-  min-width: 48px;
-  padding: 0 8px;
-  font-size: 10px;
-}
-
-.graph-controls .cross-track-toggle[aria-pressed="true"] {
-  border-color: var(--gold);
-  color: #071019;
-  background: var(--gold);
-}
-
-.graph-controls button:hover,
-.graph-controls button:focus-visible {
-  border-color: var(--teal);
-  color: #fff;
-  outline: none;
-}
-
 .knowledge-workspace {
   position: relative;
   z-index: 2;
   display: grid;
   grid-template-columns: minmax(0, 1fr) 315px;
   max-width: 1440px;
-  min-height: 620px;
+  min-height: 700px;
   margin: 0 auto;
 }
 
@@ -294,99 +258,39 @@ a {
 #globalKnowledgeGraph {
   display: block;
   width: 100%;
-  height: 620px;
+  height: 700px;
+  cursor: grab;
   touch-action: none;
 }
 
-.graph-layer {
-  transform-origin: center;
-  transition: transform 180ms ease;
+#globalKnowledgeGraph:active {
+  cursor: grabbing;
 }
 
-.background-star {
+.graph-tooltip {
+  position: absolute;
+  z-index: 4;
+  width: min(240px, calc(100% - 28px));
+  border: 1px solid #39576e;
+  border-radius: 5px;
+  padding: 9px 11px;
+  color: #dce8ef;
+  background: rgba(5, 15, 26, 0.96);
+  font-size: 11px;
+  line-height: 1.5;
+  opacity: 0;
   pointer-events: none;
+  transform: translate(14px, -50%);
+  transition: opacity 100ms ease;
 }
 
-.chapter-cluster {
-  cursor: pointer;
+.graph-tooltip.is-visible {
   opacity: 1;
-  transition: opacity 160ms ease;
 }
 
-.chapter-cluster.is-muted {
-  opacity: 0.16;
-}
-
-.chapter-main-edge {
-  fill: none;
-  stroke: #456079;
-  stroke-width: 2.2;
-  opacity: 0.62;
-}
-
-.chapter-relation-edge {
-  fill: none;
-  stroke: #78879a;
-  stroke-width: 1;
-  stroke-dasharray: 5 6;
-  opacity: 0.38;
-}
-
-.section-edge {
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 0.8;
-  opacity: 0.48;
-}
-
-.section-node {
-  fill: var(--sky);
-  stroke: currentColor;
-  stroke-width: 0.9;
-}
-
-.section-node.is-done {
-  fill: currentColor;
-  filter: drop-shadow(0 0 3px currentColor);
-}
-
-.chapter-node {
-  fill: currentColor;
-  stroke: #fff;
-  stroke-width: 0.5;
-  filter: drop-shadow(0 0 6px currentColor);
-}
-
-.chapter-node.is-current {
-  fill: var(--gold);
-  stroke: var(--gold);
-  filter: drop-shadow(0 0 9px var(--gold));
-}
-
-.chapter-hit {
-  fill: transparent;
-  stroke: transparent;
-}
-
-.chapter-label {
-  fill: #8fa3b5;
-  font-family: var(--font-cjk);
-  font-size: 7px;
-  pointer-events: none;
-}
-
-.chapter-cluster.is-selected .chapter-label {
-  fill: #fff;
-  font-weight: 700;
-}
-
-.chapter-cluster:focus {
-  outline: none;
-}
-
-.chapter-cluster:focus .chapter-hit {
-  stroke: #fff;
-  stroke-width: 1.5;
+.graph-tooltip strong {
+  display: block;
+  color: var(--teal);
 }
 
 .graph-key {
@@ -445,31 +349,58 @@ a {
   font-size: 10px;
 }
 
-#chapterSubgraph {
-  display: block;
-  width: 100%;
-  height: 180px;
-  margin: 12px 0 8px;
+.chapter-energy-card {
+  margin: 14px 0 12px;
   border-top: 1px solid var(--sky-line);
-  border-bottom: 1px solid var(--sky-line);
+  padding-top: 13px;
 }
 
-.deep-dive-edge {
-  stroke: var(--gold);
-  stroke-width: 1.2;
-  stroke-dasharray: 4 4;
-  opacity: 0.8;
+.chapter-energy-card[hidden] {
+  display: none;
 }
 
-.deep-dive-node {
-  fill: #0d1726;
-  stroke: var(--gold);
-  stroke-width: 1.5;
+.chapter-energy-card h3 {
+  margin: 7px 0 8px;
+  color: #fff;
+  font-family: var(--font-head);
+  font-size: 15px;
+  line-height: 1.25;
 }
 
-.deep-dive-label {
-  fill: #d9e5ec;
-  font: 8px/1.2 ui-monospace, SFMono-Regular, Menlo, monospace;
+.energy-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-bottom: 10px;
+}
+
+.energy-chip-row span {
+  border: 1px solid var(--sky-line);
+  border-radius: 999px;
+  padding: 3px 7px;
+  color: #9eb2c1;
+  font: 8px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.energy-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.energy-table td {
+  border-bottom: 1px solid #18283a;
+  padding: 5px 2px;
+  font-size: 10px;
+}
+
+.energy-table td:first-child {
+  color: #70889b;
+}
+
+.energy-table td:last-child {
+  color: #e8f1f7;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  text-align: right;
 }
 
 .chapter-section-list {
@@ -481,20 +412,26 @@ a {
 
 .chapter-section-link {
   display: grid;
-  grid-template-columns: 25px 10px minmax(0, 1fr);
+  width: 100%;
+  grid-template-columns: 44px 10px minmax(0, 1fr) auto;
   min-height: 39px;
   align-items: center;
   gap: 7px;
+  border: 0;
   border-radius: 4px;
   padding: 5px 6px;
   color: var(--star-muted);
+  background: transparent;
+  cursor: pointer;
   font-size: 9px;
   line-height: 1.35;
   text-decoration: none;
+  text-align: left;
 }
 
 .chapter-section-link:hover,
-.chapter-section-link:focus-visible {
+.chapter-section-link:focus-visible,
+.chapter-section-link.is-active {
   color: #fff;
   background: #15243a;
   outline: none;
