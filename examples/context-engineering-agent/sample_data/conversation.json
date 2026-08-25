@@ -1,0 +1,28 @@
+{
+  "task": "定位预算测试失败原因，提出最小修复；不得修改生产服务。",
+  "pinned_facts": [
+    "不得修改生产服务",
+    "输出预留 300 token 不可侵占",
+    "修复后必须运行 pytest -q"
+  ],
+  "history": [
+    {"role": "user", "content": "检查上下文预算模块"},
+    {"role": "assistant", "content": "先读取预算配置"},
+    {"role": "user", "content": "窗口上限是 1200"},
+    {"role": "assistant", "content": "发现输出预留配置为 300"},
+    {"role": "user", "content": "安全余量应为 50"},
+    {"role": "assistant", "content": "将验证输入上限为 850"},
+    {"role": "user", "content": "工具输出很长，先隔离分析"},
+    {"role": "assistant", "content": "已委派日志分析"},
+    {"role": "user", "content": "不要删除错误根因"},
+    {"role": "assistant", "content": "清理器会保留 FAILED 和 ERROR 行"},
+    {"role": "user", "content": "摘要必须来自原始历史"},
+    {"role": "assistant", "content": "不会把旧摘要作为唯一来源"},
+    {"role": "user", "content": "检查固定事实"},
+    {"role": "assistant", "content": "三个固定事实均保留"},
+    {"role": "user", "content": "准备组装最终输入"},
+    {"role": "assistant", "content": "先执行预算检查"},
+    {"role": "user", "content": "给出可验证结果"},
+    {"role": "assistant", "content": "将输出阶段报告和检查点"}
+  ]
+}

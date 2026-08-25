@@ -1,0 +1,17 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12
+collected 8 items
+tests/test_memory.py ..
+tests/test_compaction.py ..
+progress: preparing temporary workspace
+progress: loading fixtures
+progress: checking optional blocks
+FAILED tests/test_budget.py::test_output_reserve_is_never_consumed
+ERROR input limit used window directly; expected window-reserve-margin
+root cause: assembler compared against 1200 instead of 850
+progress: cleanup line 01
+progress: cleanup line 02
+progress: cleanup line 03
+progress: cleanup line 04
+progress: cleanup line 05
+exit code 1
