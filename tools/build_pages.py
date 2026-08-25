@@ -10,6 +10,10 @@ from html import escape
 from pathlib import Path
 
 try:
+    from .advanced_content import (
+        load_advanced_manifest,
+        render_advanced_page,
+    )
     from .build import OUTPUT_PATH, ROOT, build, render_document
     from .handbook_build import (
         TOC_PLACEHOLDER,
@@ -26,6 +30,10 @@ try:
         rewrite_internal_links,
     )
 except ImportError:  # Direct script execution: python3 tools/build_pages.py
+    from advanced_content import (
+        load_advanced_manifest,
+        render_advanced_page,
+    )
     from build import OUTPUT_PATH, ROOT, build, render_document
     from handbook_build import (
         TOC_PLACEHOLDER,
@@ -46,7 +54,9 @@ except ImportError:  # Direct script execution: python3 tools/build_pages.py
 DIST_PATH = ROOT / "dist"
 PDF_PATH = ROOT / "Agent学习与面试宝典.pdf"
 MANIFEST_PATH = ROOT / "content" / "book.json"
+ADVANCED_MANIFEST_PATH = ROOT / "content" / "advanced" / "manifest.json"
 HANDBOOK_TEMPLATE_PATH = ROOT / "templates" / "handbook.html"
+ADVANCED_TEMPLATE_PATH = ROOT / "templates" / "advanced.html"
 LEARNING_MAP_TEMPLATE_PATH = ROOT / "templates" / "learning-map.html"
 GROUP_SUBTITLES = (
     "Foundations",
@@ -182,6 +192,25 @@ def write_sitemap(output_dir: Path, routes: list[str], site_url: str | None) -> 
     )
 
 
+def write_advanced_pages(
+    output_dir: Path,
+    outputs: dict[str, Path],
+) -> None:
+    manifest = load_advanced_manifest(ADVANCED_MANIFEST_PATH)
+    template = ADVANCED_TEMPLATE_PATH.read_text(encoding="utf-8")
+    for item in manifest.items:
+        html = render_advanced_page(
+            root=ROOT,
+            manifest=manifest,
+            item=item,
+            template=template,
+        )
+        target = output_dir / item.route / "index.html"
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(html, encoding="utf-8", newline="")
+        outputs[item.route] = target
+
+
 def build_site(
     output_dir: Path = DIST_PATH,
     site_url: str | None = None,
@@ -227,6 +256,7 @@ def build_site(
         target.write_text(html, encoding="utf-8", newline="")
         outputs[spec.route] = target
 
+    write_advanced_pages(output_dir, outputs)
     write_sitemap(output_dir, list(outputs), site_url)
     copy_tree(ROOT / "assets", output_dir / "assets")
     copy_tree(ROOT / "_shared", output_dir / "_shared")

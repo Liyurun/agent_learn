@@ -1,0 +1,65 @@
+<!-- GENERATED FILE: 请修改 content/、templates/ 或 assets/，不要直接编辑本文件。 -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="{{PAGE_DESCRIPTION}}">
+  <link rel="icon" href="data:,">
+  <title>{{HTML_TITLE}}</title>
+  <link rel="stylesheet" href="{{ADVANCED_STYLE_HREF}}">
+</head>
+<body class="advanced-page" data-page-id="{{PAGE_ID}}" data-site-root="{{SITE_ROOT}}">
+  <a class="skip-link" href="#main-content">跳到正文</a>
+  <header class="advanced-topbar">
+    <a class="advanced-brand" href="{{BRAND_HOME_HREF}}">Agent <strong>知识图谱</strong><span>/ Advanced</span></a>
+    <nav class="advanced-topnav" aria-label="站点导航">
+      <a href="{{MAP_HOME_HREF}}">全局星图</a>
+      <button class="advanced-nav-button" id="advancedBookToggle" type="button"
+              aria-controls="advancedBookNav" aria-expanded="false">目录</button>
+      <button class="advanced-nav-button" id="advancedTocToggle" type="button"
+              aria-controls="advancedPageToc" aria-expanded="false">本页</button>
+    </nav>
+  </header>
+
+  <div class="advanced-reading-shell">
+    <aside class="advanced-book-nav" id="advancedBookNav">
+      <div class="advanced-side-heading">
+        <span>ADVANCED TRACK</span>
+        <strong>进阶完整版</strong>
+      </div>
+      {{BOOK_NAV}}
+    </aside>
+
+    <main class="advanced-main" id="main-content">
+      <nav class="advanced-breadcrumb" aria-label="面包屑">{{BREADCRUMB}}</nav>
+      <header class="advanced-page-header">
+        <span class="advanced-kind">{{PAGE_KIND}}</span>
+        <h1>{{PAGE_TITLE}}</h1>
+        <p>{{PAGE_SUMMARY}}</p>
+        <button class="advanced-complete" id="advancedComplete" type="button"
+                aria-pressed="false">标记本节完成</button>
+      </header>
+      <article class="advanced-prose">{{PAGE_CONTENT}}</article>
+      {{PAGE_FOOTER}}
+    </main>
+
+    <aside class="advanced-page-toc" id="advancedPageToc">
+      <div class="advanced-side-heading">
+        <span>ON THIS PAGE</span>
+        <strong>本页目录</strong>
+      </div>
+      {{PAGE_TOC}}
+      <div class="advanced-page-progress">
+        <span>本章进度</span>
+        <strong id="advancedChapterProgress">0/0</strong>
+        <i><b id="advancedChapterProgressFill"></b></i>
+      </div>
+    </aside>
+  </div>
+
+  <div class="advanced-backdrop" id="advancedBackdrop" hidden></div>
+  <script>window.ADVANCED_PAGE = {{PAGE_CONTEXT}};</script>
+  <script src="{{ADVANCED_SCRIPT_HREF}}"></script>
+</body>
+</html>
