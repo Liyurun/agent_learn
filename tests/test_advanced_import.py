@@ -8,11 +8,13 @@ from zipfile import ZipFile
 
 from tools.import_advanced_handbook import (
     AdvancedImportError,
+    build_source_route_map,
     build_item,
     build_manifest,
     clean_markdown,
     discover_content_members,
     import_archive,
+    rewrite_source_markdown_links,
     split_frontmatter,
 )
 
@@ -127,6 +129,35 @@ class MarkdownCleanerTests(unittest.TestCase):
 ```
 """
         self.assertEqual(clean_markdown(source), source)
+
+    def test_rewrites_source_markdown_links_and_unlinks_private_files(self) -> None:
+        chapter = build_item({
+            "title": "第 1 章",
+            "slug": "chapter-01",
+            "section": "第一部分 · 系统学习教材",
+            "volume": "卷一 · 认识 Agent",
+            "order": 2,
+            "sourcePath": "教材/第1章/README.md",
+            "description": "第一章。",
+            "isChapterLanding": True,
+        })
+        routes = build_source_route_map([chapter])
+        source = (
+            "[第一章](教材/第1章.md)\n"
+            "[完整目录](SUMMARY.md)\n"
+            "[资料来源](./资料来源.md)\n"
+        )
+
+        cleaned = rewrite_source_markdown_links(
+            source,
+            current_source_path="README.md",
+            source_routes=routes,
+        )
+
+        self.assertIn("[第一章](/advanced/chapter-01/)", cleaned)
+        self.assertIn("[完整目录](/advanced/)", cleaned)
+        self.assertIn("资料来源", cleaned)
+        self.assertNotIn("资料来源.md", cleaned)
 
 
 class ManifestGenerationTests(unittest.TestCase):

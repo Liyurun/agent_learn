@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import posixpath
 import re
 import shutil
 import tempfile
@@ -12,6 +13,7 @@ from collections import Counter
 from dataclasses import dataclass
 from pathlib import Path, PurePosixPath
 from typing import Any, Callable
+from urllib.parse import unquote, urlsplit
 from zipfile import ZipFile
 
 import yaml
@@ -47,6 +49,7 @@ TRAE_REF_RE = re.compile(r"\[\$TRAE_REF\]\(([^)]+)\)")
 FENCE_RE = re.compile(r"^\s*(```|~~~)")
 CHAPTER_SLUG_RE = re.compile(r"^chapter-(\d+)$")
 CHAPTER_ID_RE = re.compile(r"^chapter-(\d+)")
+MARKDOWN_FILE_LINK_RE = re.compile(r"\[([^\]]+)\]\(([^)]+)\)")
 EXAMPLE_ALLOWED_ROOTS = {
     "README.md",
     "pyproject.toml",
@@ -180,6 +183,46 @@ def transform_outside_fences(
 
 def clean_markdown(text: str) -> str:
     return transform_outside_fences(text, clean_prose)
+
+
+def build_source_route_map(items: list[dict[str, Any]]) -> dict[str, str]:
+    routes = {"SUMMARY.md": "advanced"}
+    for item in items:
+        source_path = PurePosixPath(item["sourcePath"]).as_posix()
+        routes[source_path] = item["route"]
+        if source_path.endswith("/README.md"):
+            routes[source_path[:-len("/README.md")] + ".md"] = item["route"]
+    return routes
+
+
+def rewrite_source_markdown_links(
+    text: str,
+    *,
+    current_source_path: str,
+    source_routes: dict[str, str],
+) -> str:
+    current_parent = PurePosixPath(current_source_path).parent.as_posix()
+
+    def rewrite(match: re.Match[str]) -> str:
+        label, href = match.groups()
+        parsed = urlsplit(href)
+        if parsed.scheme or parsed.netloc or not parsed.path.endswith(".md"):
+            return match.group(0)
+        path = unquote(parsed.path)
+        if path.startswith("/"):
+            resolved = posixpath.normpath(path.lstrip("/"))
+        else:
+            resolved = posixpath.normpath(posixpath.join(current_parent, path))
+        route = source_routes.get(resolved) or source_routes.get(path)
+        if route is None:
+            return label
+        fragment = f"#{parsed.fragment}" if parsed.fragment else ""
+        return f"[{label}](/{route}/{fragment})"
+
+    return transform_outside_fences(
+        text,
+        lambda prose: MARKDOWN_FILE_LINK_RE.sub(rewrite, prose),
+    )
 
 
 def validate_clean_markdown(text: str, source_path: str) -> None:
@@ -354,14 +397,26 @@ def import_archive(archive: Path, output_root: Path) -> dict[str, Any]:
     ))
     try:
         pages = staged / "pages"
-        items = []
+        records: list[tuple[dict[str, Any], str]] = []
         with ZipFile(archive) as source:
             for member in members:
                 metadata, body = split_frontmatter(
                     source.read(member.archive_name).decode("utf-8")
                 )
                 item = build_item(metadata)
+                records.append((item, body))
+
+            source_routes = build_source_route_map(
+                [item for item, _ in records]
+            )
+            items = []
+            for item, body in records:
                 cleaned = clean_markdown(body)
+                cleaned = rewrite_source_markdown_links(
+                    cleaned,
+                    current_source_path=item["sourcePath"],
+                    source_routes=source_routes,
+                )
                 validate_clean_markdown(cleaned, item["sourcePath"])
                 target = pages / (item["slug"] + ".md")
                 target.parent.mkdir(parents=True, exist_ok=True)
