@@ -2,6 +2,7 @@
 """Validate handbook sources and the generated HTML."""
 from __future__ import annotations
 
+import json
 import re
 import sys
 from collections import Counter
@@ -10,18 +11,38 @@ from pathlib import Path
 from urllib.parse import unquote, urlsplit
 
 try:
+    from .advanced_content import (
+        load_advanced_manifest,
+        validate_advanced_manifest,
+    )
     from .handbook_build import (
         GENERATED_COMMENT,
         BuildError,
         build_page_specs,
         load_manifest,
     )
+    from .knowledge_graph import (
+        build_advanced_graph,
+        load_relations,
+        load_track_mapping,
+        with_relations,
+    )
 except ImportError:  # Direct script execution: python3 tools/verify_handbook.py
+    from advanced_content import (
+        load_advanced_manifest,
+        validate_advanced_manifest,
+    )
     from handbook_build import (
         GENERATED_COMMENT,
         BuildError,
         build_page_specs,
         load_manifest,
+    )
+    from knowledge_graph import (
+        build_advanced_graph,
+        load_relations,
+        load_track_mapping,
+        with_relations,
     )
 
 
@@ -30,6 +51,9 @@ PROJECT_ROOT = SCRIPT_PATH.parents[1]
 HTML_PATH = PROJECT_ROOT / "agent-learning-handbook.html"
 MANIFEST_PATH = PROJECT_ROOT / "content" / "book.json"
 DIST_PATH = PROJECT_ROOT / "dist"
+ADVANCED_MANIFEST_PATH = PROJECT_ROOT / "content" / "advanced" / "manifest.json"
+ADVANCED_RELATIONS_PATH = PROJECT_ROOT / "content" / "advanced" / "relations.json"
+TRACK_MAPPING_PATH = PROJECT_ROOT / "content" / "track-mapping.json"
 BALANCED_TAGS = ("section", "div", "pre", "code", "table", "ul", "ol", "li")
 LEGACY_STAGES = {
     "shell": ["learningModes", "moduleAtlas", "modeHub", "moduleAtlasGrid"],
@@ -86,6 +110,82 @@ def verify_source(root: Path = PROJECT_ROOT) -> list[str]:
         errors.append(f"章节清单不完整: 缺少 {sorted(expected_chapters - chapter_ids)}")
     if not expected_labs.issubset(lab_ids):
         errors.append(f"Lab 清单不完整: 缺少 {sorted(expected_labs - lab_ids)}")
+    return errors
+
+
+def verify_advanced_source(root: Path = PROJECT_ROOT) -> list[str]:
+    errors: list[str] = []
+    manifest_path = root / "content" / "advanced" / "manifest.json"
+    relations_path = root / "content" / "advanced" / "relations.json"
+    mapping_path = root / "content" / "track-mapping.json"
+    try:
+        manifest = load_advanced_manifest(manifest_path)
+        validate_advanced_manifest(manifest)
+    except BuildError as exc:
+        return [str(exc)]
+
+    counts = Counter(item.kind for item in manifest.items)
+    expected = {"chapter": 31, "section": 220, "appendix": 4, "guide": 1}
+    for kind, count in expected.items():
+        if counts[kind] != count:
+            errors.append(
+                f"进阶内容 {kind} 数量错误: 期望 {count}，实际 {counts[kind]}"
+            )
+
+    for item in manifest.items:
+        page = root / "content" / "advanced" / item.content_path
+        if not page.is_file():
+            errors.append(f"进阶内容文件不存在: {item.content_path}")
+            continue
+        source = page.read_text(encoding="utf-8")
+        if "TRAE_REF" in source:
+            errors.append(f"{item.content_path}: 残留 TRAE_REF")
+        if re.search(r"^#{1,6}\s*图片生成描述", source, re.MULTILINE):
+            errors.append(f"{item.content_path}: 残留图片生成描述")
+
+    try:
+        with_relations(
+            build_advanced_graph(manifest),
+            load_relations(relations_path),
+        )
+    except BuildError as exc:
+        errors.append(str(exc))
+
+    try:
+        mapping = load_track_mapping(mapping_path)
+        concise = load_manifest(root / "content" / "book.json")
+        concise_ids = {item["id"] for item in concise["items"]}
+        advanced_ids = {item.id for item in manifest.items}
+        for source, targets in mapping.items():
+            if source not in concise_ids:
+                errors.append(f"跨轨映射源不存在: {source}")
+            for target in targets:
+                if target not in advanced_ids:
+                    errors.append(f"跨轨映射目标不存在: {target}")
+    except BuildError as exc:
+        errors.append(str(exc))
+
+    forbidden_parts = {
+        ".astro",
+        ".cache",
+        "node_modules",
+        "pagefind",
+        "__pycache__",
+    }
+    imported_roots = (
+        root / "content" / "advanced",
+        root / "examples" / "context-engineering-agent",
+    )
+    for imported_root in imported_roots:
+        if not imported_root.exists():
+            continue
+        for path in imported_root.rglob("*"):
+            if (
+                any(part in forbidden_parts or part.endswith(".egg-info")
+                    for part in path.parts)
+                or path.suffix in {".log", ".pid"}
+            ):
+                errors.append(f"禁止的导入产物: {path.relative_to(root)}")
     return errors
 
 
@@ -153,7 +253,10 @@ def verify_site(
     if expected_routes is None:
         try:
             manifest = load_manifest(MANIFEST_PATH)
-            expected_routes = {spec.route for spec in build_page_specs(manifest)}
+            advanced = load_advanced_manifest(ADVANCED_MANIFEST_PATH)
+            expected_routes = {
+                spec.route for spec in build_page_specs(manifest)
+            } | {item.route for item in advanced.items}
         except BuildError as exc:
             return [str(exc)]
 
@@ -219,6 +322,52 @@ def verify_site(
             target = _site_page_for_resource(css_path, value)
             if not target.is_file():
                 errors.append(f"{css_path}: 本地资源不存在: {value}")
+
+    search_path = dist / "search-index.json"
+    if not search_path.is_file():
+        errors.append("缺少统一搜索索引: search-index.json")
+    else:
+        try:
+            search_data = json.loads(search_path.read_text(encoding="utf-8"))
+            search_routes = {
+                document["route"]
+                for document in search_data.get("documents", [])
+                if isinstance(document, dict) and isinstance(
+                    document.get("route"), str
+                )
+            }
+            expected_search_routes = expected_routes - {""}
+            if search_routes != expected_search_routes:
+                errors.append(
+                    "搜索索引路由不完整: "
+                    f"缺少 {sorted(expected_search_routes - search_routes)}，"
+                    f"多出 {sorted(search_routes - expected_search_routes)}"
+                )
+        except (OSError, json.JSONDecodeError) as exc:
+            errors.append(f"统一搜索索引无效: {exc}")
+
+    sitemap_path = dist / "sitemap.xml"
+    if not sitemap_path.is_file():
+        errors.append("缺少 sitemap.xml")
+    else:
+        sitemap = sitemap_path.read_text(encoding="utf-8")
+        locations = re.findall(r"<loc>(.*?)</loc>", sitemap)
+        if len(locations) != len(expected_routes):
+            errors.append(
+                f"sitemap 路由数量错误: 期望 {len(expected_routes)}，"
+                f"实际 {len(locations)}"
+            )
+        route_locations = set()
+        for location in locations:
+            path = unquote(urlsplit(location).path).rstrip("/")
+            route_locations.add(path)
+        for route in expected_routes:
+            suffix = "/" + route if route else ""
+            if not any(
+                location.endswith(suffix)
+                for location in route_locations
+            ):
+                errors.append(f"sitemap 缺少页面路由: {route or '/'}")
     return errors
 
 
@@ -228,7 +377,7 @@ def main(argv: list[str]) -> int:
     if stage not in valid:
         print(f"[FAIL] invalid_stage={stage}; valid={','.join(sorted(valid))}")
         return 2
-    errors = verify_source()
+    errors = [*verify_source(), *verify_advanced_source()]
     if stage not in {"source", "pages"}:
         try:
             html = HTML_PATH.read_text(encoding="utf-8")

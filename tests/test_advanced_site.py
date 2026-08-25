@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import re
+import shutil
 import tempfile
 import unittest
 from collections import Counter
@@ -27,6 +28,7 @@ from tools.knowledge_graph import (
     traverse,
     validate_relations,
 )
+from tools.verify_handbook import verify_advanced_source
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -359,6 +361,40 @@ class TrackMappingTests(unittest.TestCase):
 
         self.assertIn("../advanced/chapter-27/", concise)
         self.assertIn("../../ch4/", advanced)
+
+
+def copy_advanced_fixture(target: Path) -> Path:
+    content = target / "content"
+    content.mkdir(parents=True)
+    shutil.copytree(
+        ROOT / "content" / "advanced",
+        content / "advanced",
+    )
+    shutil.copy2(ROOT / "content" / "book.json", content / "book.json")
+    shutil.copy2(
+        ROOT / "content" / "track-mapping.json",
+        content / "track-mapping.json",
+    )
+    return target
+
+
+class AdvancedVerifyTests(unittest.TestCase):
+    def test_real_advanced_source_is_clean(self) -> None:
+        self.assertEqual(verify_advanced_source(ROOT), [])
+
+    def test_verifier_rejects_residual_author_markers(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = copy_advanced_fixture(Path(tmp))
+            page = next((root / "content/advanced/pages").rglob("*.md"))
+            page.write_text(
+                "[$TRAE_REF](https://example.com)",
+                encoding="utf-8",
+            )
+
+            self.assertTrue(any(
+                "TRAE_REF" in error
+                for error in verify_advanced_source(root)
+            ))
 
 
 if __name__ == "__main__":

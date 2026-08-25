@@ -6,6 +6,8 @@
 
 - `content/book.json`：全书顺序、锚点、标题、类型和目录分组。
 - `content/**/*.md`：正文唯一事实来源。仅由原生块级 HTML 组成的迁移文件会原样注入；其他文件按 Markdown（可混合原生 HTML）渲染。
+- `content/advanced/`：已清洗并标准化的进阶版内容、清单与知识关系。
+- `content/track-mapping.json`：精炼版与进阶版的对应阅读关系。
 - `templates/handbook.html`：页面外壳、样式和脚本，包含 `{{BOOK_CONTENT}}`。
 - `assets/`、`_shared/`：现有交互脚本、图片、字体和第三方前端资源。
 - `agent-learning-handbook.html`、`Agent学习与面试宝典.pdf`：生成物，请勿直接编辑。
@@ -58,7 +60,15 @@ GitHub Pages 首页是交互式学习星图，只包含导航数据，不加载�
 /ch7/        第 7 章：框架全景与选型
 /lab2/       Lab 2：端到端 RAG 问答
 /resources/  参考来源
+/advanced/   进阶完整版导读
+/advanced/chapter-27/context-budget/  进阶版独立小节
 ```
+
+首页可在“精炼版”和“进阶完整版”之间切换。两条路线分别使用
+`ah-read-chapters` / `ah-last-chapter` 与
+`ah-advanced-learning-state` / `ah-advanced-last-page` 保存进度；
+`ah-learning-track` 只记录当前显示的路线。统一搜索覆盖两条路线，
+`search-index.json` 仅在用户首次打开搜索框时加载。
 
 本地构建并预览：
 
@@ -69,6 +79,25 @@ python3 -m http.server 4173 --directory dist
 
 然后访问 `http://localhost:4173/`。`npm run build` 仍生成完整单文件 HTML，
 供离线阅读和 PDF 导出使用。
+
+当前完整单文件 HTML 和 PDF 仍只包含精炼版；进阶版按独立路由发布，不并入 PDF。
+
+## 更新进阶版内容
+
+原始 ZIP 体积较大且包含站点构建产物，不提交到仓库。仓库只保留清洗后的
+`content/advanced/` 和示例工程。重新导入时使用项目虚拟环境：
+
+```bash
+source .venv/bin/activate
+python3 tools/import_advanced_handbook.py \
+  --archive "/absolute/path/to/AI-Agent-学习实践面试宝典-完整内容.zip"
+npm test
+npm run pages
+npm run verify
+```
+
+导入器会原子替换进阶内容目录，拒绝危险 ZIP 路径，并清理作者标记、图片生成说明
+和未发布的源文件链接。
 
 ## 修改现有章节
 
