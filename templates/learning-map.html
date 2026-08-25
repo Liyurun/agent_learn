@@ -4,49 +4,75 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Agent 学习与面试宝典知识星图，从原理、技术、实践、面试、进阶到实战工坊。">
+  <meta name="description" content="Agent 学习与面试宝典双轨知识图谱。每个章节是一张小图，所有章节共同连接成完整 Agent 工程图谱。">
   <link rel="icon" href="data:,">
   <link rel="canonical" href="{{SITE_URL}}">
-  <title>学习星图 · Agent 学习与面试宝典</title>
+  <title>知识图谱 · Agent 学习与面试宝典</title>
   <link rel="stylesheet" href="./assets/learning-map.css">
 </head>
-<body>
+<body data-site-root="./">
   <main id="learningStarmap">
     <nav class="starmap-nav" aria-label="站点导航">
-      <a class="starmap-brand" href="./">Agent <strong>星图</strong><span>/ 2026</span></a>
+      <a class="starmap-brand" href="./">Agent <strong>知识图谱</strong><span>/ 2026</span></a>
       <div class="starmap-nav-links">
-        <a aria-current="page" href="./">学习星图</a>
-        <a href="./guide/">学习导读</a>
-        <a href="./quiz/">模块复盘</a>
+        <a aria-current="page" href="./">全局星图</a>
+        <a href="./guide/">精炼导读</a>
+        <a href="./advanced/">进阶导读</a>
         <a href="./labs/">实战工坊</a>
         <a href="./resources/">参考资源</a>
       </div>
     </nav>
 
     <header class="starmap-hero">
-      <p class="starmap-eyebrow">Agent learning · star map</p>
-      <h1>点亮属于你的<br><em>Agent 认知星座</em></h1>
-      <p class="starmap-summary">从原理到实战，28 颗星连成六个星座。自由探索完整知识版图，每次只打开你正在阅读的一章。</p>
+      <div>
+        <p class="starmap-eyebrow">Graph of graphs · 双轨知识宇宙</p>
+        <h1>从一颗知识点，走向<br><em>完整 Agent 工程图谱</em></h1>
+        <p class="starmap-summary">每个小节是一颗星，每章是一张小图；章节之间的学习顺序与知识依赖，最终汇成整本手册的大图。</p>
+      </div>
+      <div class="track-switcher" id="trackSwitcher" role="group" aria-label="学习路线">
+        <button type="button" data-track="concise" aria-pressed="true">精炼版 <span>28 星</span></button>
+        <button type="button" data-track="advanced" aria-pressed="false">进阶完整版 <span>251 页</span></button>
+      </div>
     </header>
 
-    <section class="starmap-desktop" aria-label="六篇学习星图">
-      <svg id="constellationCanvas" role="img" aria-label="Agent 学习知识星图" viewBox="0 0 940 610"></svg>
-      <aside id="constellationTrack" class="constellation-track" aria-live="polite"></aside>
+    <section class="graph-toolbar" aria-label="图谱工具">
+      <div class="graph-legend" id="constellationLegend"></div>
+      <div class="graph-controls">
+        <button type="button" id="graphZoomOut" aria-label="缩小图谱" title="缩小">−</button>
+        <button type="button" id="graphReset" aria-label="复位图谱" title="复位">⌂</button>
+        <button type="button" id="graphZoomIn" aria-label="放大图谱" title="放大">＋</button>
+      </div>
     </section>
 
-    <nav id="constellationMobile" class="constellation-mobile" aria-label="移动端学习路径"></nav>
+    <section class="knowledge-workspace starmap-desktop" aria-label="双轨学习知识图谱">
+      <div class="global-graph-wrap">
+        <svg id="globalKnowledgeGraph" role="img"
+             aria-label="完整 Agent 知识图谱" viewBox="0 0 1040 620"></svg>
+        <p class="graph-key"><span>章内顺序</span><span>主学习路径</span><span>跨主题依赖</span></p>
+      </div>
+      <aside id="constellationTrack" class="chapter-graph-panel" aria-live="polite">
+        <p class="panel-eyebrow">CHAPTER SUBGRAPH · 章节小图</p>
+        <h2 id="chapterGraphTitle">选择一章</h2>
+        <p id="chapterGraphMeta" class="chapter-graph-meta"></p>
+        <svg id="chapterSubgraph" role="img" aria-label="当前章节知识图"></svg>
+        <nav id="chapterSectionList" class="chapter-section-list" aria-label="当前章节小节"></nav>
+        <a id="chapterEnterLink" class="chapter-enter-link" href="./">进入章节</a>
+      </aside>
+    </section>
+
+    <nav id="constellationMobile" class="constellation-mobile" aria-label="移动端层级知识图"></nav>
 
     <nav class="constellation-fallback" aria-label="全部章节">
 {{STAR_MAP_FALLBACK}}
     </nav>
 
     <footer class="starmap-footer">
-      <div id="constellationLegend" class="constellation-legend" aria-label="星座图例"></div>
+      <p id="graphStatus" class="graph-status">当前视图：精炼版全局图</p>
       <div class="starmap-progress" aria-live="polite">
         <strong id="starmapProgressCount">0/28</strong>
         <div class="starmap-progress-copy">
           <span class="starmap-progress-track"><i id="starmapProgressFill"></i></span>
-          <span id="starmapProgressText">开始点亮你的学习星图</span>
+          <span id="starmapProgressText">开始点亮你的学习图谱</span>
         </div>
       </div>
     </footer>

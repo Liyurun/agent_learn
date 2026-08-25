@@ -18,9 +18,29 @@ from tools.advanced_content import (
 )
 from tools.build_pages import build_site
 from tools.handbook_build import BuildError
+from tools.handbook_build import load_manifest, render_manifest_items
+from tools.knowledge_graph import (
+    build_advanced_graph,
+    build_concise_graph,
+    traverse,
+    validate_relations,
+)
 
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+def read_json_script(path: Path, element_id: str) -> dict:
+    html = path.read_text(encoding="utf-8")
+    match = re.search(
+        rf'<script id="{re.escape(element_id)}" type="application/json">'
+        r"(.*?)</script>",
+        html,
+        re.DOTALL,
+    )
+    if match is None:
+        raise AssertionError(f"missing JSON script: {element_id}")
+    return json.loads(match.group(1))
 
 
 class AdvancedManifestTests(unittest.TestCase):
@@ -141,6 +161,107 @@ class AdvancedClientContractTests(unittest.TestCase):
         self.assertNotIn('"ah-read-chapters"', script)
         self.assertIn("completedSections", script)
         self.assertIn("completedChapters", script)
+
+
+class KnowledgeGraphTests(unittest.TestCase):
+    def setUp(self) -> None:
+        self.advanced = load_advanced_manifest(
+            ROOT / "content" / "advanced" / "manifest.json"
+        )
+
+    def test_advanced_graph_has_one_cluster_per_chapter(self) -> None:
+        graph = build_advanced_graph(self.advanced)
+        chapters = [node for node in graph.nodes if node.kind == "chapter"]
+        sections = [node for node in graph.nodes if node.kind == "section"]
+
+        self.assertEqual(len(chapters), 31)
+        self.assertEqual(len(sections), 220)
+        for chapter in chapters:
+            expected = len(chapter_pages(self.advanced, chapter.id)) - 1
+            actual = sum(
+                1 for node in sections if node.parent == chapter.id
+            )
+            self.assertEqual(actual, expected, chapter.id)
+
+    def test_every_advanced_chapter_is_connected_to_global_path(self) -> None:
+        graph = build_advanced_graph(self.advanced)
+        reachable = traverse(graph, "advanced-ch01")
+        chapter_ids = {
+            node.id for node in graph.nodes if node.kind == "chapter"
+        }
+
+        self.assertTrue(chapter_ids <= reachable)
+
+    def test_concise_chapters_and_labs_have_section_subgraphs(self) -> None:
+        manifest = load_manifest(ROOT / "content" / "book.json")
+        rendered = render_manifest_items(ROOT, manifest)
+        graph = build_concise_graph(ROOT, manifest, rendered)
+        chapters = [node for node in graph.nodes if node.kind == "chapter"]
+        sections = [node for node in graph.nodes if node.kind == "section"]
+
+        self.assertEqual(len(chapters), 28)
+        self.assertGreater(len(sections), 28)
+        for chapter in chapters:
+            self.assertTrue(
+                any(node.parent == chapter.id for node in sections),
+                chapter.id,
+            )
+
+    def test_invalid_relation_target_fails(self) -> None:
+        graph = build_advanced_graph(self.advanced)
+        with self.assertRaisesRegex(BuildError, "unknown relation target"):
+            validate_relations(
+                graph,
+                [{"from": "advanced-ch01", "to": "missing", "type": "related"}],
+            )
+
+
+class DualTrackGraphPageTests(unittest.TestCase):
+    def test_homepage_contains_both_track_graphs(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            output = Path(tmp)
+            build_site(output_dir=output)
+            data = read_json_script(output / "index.html", "starmapData")
+
+        self.assertEqual(set(data["tracks"]), {"concise", "advanced"})
+        self.assertEqual(
+            len([
+                node for node in data["tracks"]["advanced"]["nodes"]
+                if node["kind"] == "chapter"
+            ]),
+            31,
+        )
+        self.assertEqual(
+            len([
+                node for node in data["tracks"]["advanced"]["nodes"]
+                if node["kind"] == "section"
+            ]),
+            220,
+        )
+
+    def test_homepage_has_track_switch_and_subgraph_panel(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            output = Path(tmp)
+            build_site(output_dir=output)
+            html = (output / "index.html").read_text(encoding="utf-8")
+
+        self.assertIn('id="trackSwitcher"', html)
+        self.assertIn('id="globalKnowledgeGraph"', html)
+        self.assertIn('id="chapterSubgraph"', html)
+        self.assertIn('id="chapterSectionList"', html)
+
+    def test_mobile_graph_contract_is_present(self) -> None:
+        script = (ROOT / "assets" / "learning-map.js").read_text(
+            encoding="utf-8"
+        )
+        css = (ROOT / "assets" / "learning-map.css").read_text(
+            encoding="utf-8"
+        )
+
+        self.assertIn("renderMobileDomains", script)
+        self.assertIn("renderMobileChapterGraph", script)
+        self.assertIn("@media (max-width: 768px)", css)
+        self.assertIn("min-height: 44px", css)
 
 
 if __name__ == "__main__":

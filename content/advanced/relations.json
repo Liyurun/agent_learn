@@ -1,0 +1,37 @@
+[
+  {
+    "from": "advanced-ch04",
+    "to": "advanced-ch27",
+    "type": "prerequisite"
+  },
+  {
+    "from": "advanced-ch05",
+    "to": "advanced-ch27",
+    "type": "prerequisite"
+  },
+  {
+    "from": "advanced-ch16",
+    "to": "advanced-ch28",
+    "type": "prerequisite"
+  },
+  {
+    "from": "advanced-ch18",
+    "to": "advanced-ch30",
+    "type": "related"
+  },
+  {
+    "from": "advanced-ch11",
+    "to": "advanced-ch20",
+    "type": "practice"
+  },
+  {
+    "from": "advanced-ch29",
+    "to": "advanced-ch24",
+    "type": "interview"
+  },
+  {
+    "from": "advanced-ch26",
+    "to": "advanced-ch19",
+    "type": "practice"
+  }
+]

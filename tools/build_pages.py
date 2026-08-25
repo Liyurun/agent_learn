@@ -29,6 +29,13 @@ try:
         resolve_site_href,
         rewrite_internal_links,
     )
+    from .knowledge_graph import (
+        build_advanced_graph,
+        build_concise_graph,
+        graph_to_dict,
+        load_relations,
+        with_relations,
+    )
 except ImportError:  # Direct script execution: python3 tools/build_pages.py
     from advanced_content import (
         load_advanced_manifest,
@@ -49,12 +56,20 @@ except ImportError:  # Direct script execution: python3 tools/build_pages.py
         resolve_site_href,
         rewrite_internal_links,
     )
+    from knowledge_graph import (
+        build_advanced_graph,
+        build_concise_graph,
+        graph_to_dict,
+        load_relations,
+        with_relations,
+    )
 
 
 DIST_PATH = ROOT / "dist"
 PDF_PATH = ROOT / "Agent学习与面试宝典.pdf"
 MANIFEST_PATH = ROOT / "content" / "book.json"
 ADVANCED_MANIFEST_PATH = ROOT / "content" / "advanced" / "manifest.json"
+ADVANCED_RELATIONS_PATH = ROOT / "content" / "advanced" / "relations.json"
 HANDBOOK_TEMPLATE_PATH = ROOT / "templates" / "handbook.html"
 ADVANCED_TEMPLATE_PATH = ROOT / "templates" / "advanced.html"
 LEARNING_MAP_TEMPLATE_PATH = ROOT / "templates" / "learning-map.html"
@@ -92,6 +107,8 @@ def render_page_content(
 def build_starmap_data(
     manifest: dict,
     anchor_routes: dict[str, str],
+    rendered_items: dict[str, str],
+    advanced_manifest,
 ) -> dict:
     grouped: list[tuple[str, list[dict]]] = []
     lookup: dict[str, list[dict]] = {}
@@ -129,11 +146,36 @@ def build_starmap_data(
                 for item in items
             ],
         })
-    return {"groups": groups, "anchorRoutes": anchor_routes}
+    concise_graph = build_concise_graph(ROOT, manifest, rendered_items)
+    advanced_graph = with_relations(
+        build_advanced_graph(advanced_manifest),
+        load_relations(ADVANCED_RELATIONS_PATH),
+    )
+    return {
+        "groups": groups,
+        "anchorRoutes": anchor_routes,
+        "defaultTrack": "concise",
+        "tracks": {
+            "concise": {
+                **graph_to_dict(concise_graph),
+                "progressTotal": len([
+                    node for node in concise_graph.nodes
+                    if node.kind == "chapter"
+                ]),
+            },
+            "advanced": {
+                **graph_to_dict(advanced_graph),
+                "progressTotal": len([
+                    node for node in advanced_graph.nodes
+                    if node.kind in {"chapter", "section"}
+                ]),
+            },
+        },
+    }
 
 
 def render_starmap_fallback(starmap_data: dict) -> str:
-    lines = []
+    lines = ['      <div class="fallback-track" data-track="concise">']
     for group in starmap_data["groups"]:
         lines.extend([
             '      <section class="fallback-group">',
@@ -145,6 +187,23 @@ def render_starmap_fallback(starmap_data: dict) -> str:
                 f'{escape(entry["number"])} {escape(entry["title"])}</a>'
             )
         lines.append("      </section>")
+    lines.append("      </div>")
+    lines.append('      <div class="fallback-track" data-track="advanced">')
+    advanced = starmap_data["tracks"]["advanced"]
+    node_lookup = {node["id"]: node for node in advanced["nodes"]}
+    for domain in advanced["domains"]:
+        lines.extend([
+            '      <section class="fallback-group">',
+            f'        <h2>{escape(domain["title"])}</h2>',
+        ])
+        for chapter_id in domain["chapterIds"]:
+            chapter = node_lookup[chapter_id]
+            lines.append(
+                f'        <a href="./{escape(chapter["route"], quote=True)}/">'
+                f'{escape(chapter["title"])}</a>'
+            )
+        lines.append("      </section>")
+    lines.append("      </div>")
     return "\n".join(lines)
 
 
@@ -152,10 +211,17 @@ def write_learning_map(
     target: Path,
     manifest: dict,
     anchor_routes: dict[str, str],
+    rendered_items: dict[str, str],
+    advanced_manifest,
     site_url: str | None,
 ) -> None:
     template = LEARNING_MAP_TEMPLATE_PATH.read_text(encoding="utf-8")
-    data = build_starmap_data(manifest, anchor_routes)
+    data = build_starmap_data(
+        manifest,
+        anchor_routes,
+        rendered_items,
+        advanced_manifest,
+    )
     base_url = (site_url or "http://localhost/").rstrip("/") + "/"
     html = replace_single_placeholder(template, "{{SITE_URL}}", escape(base_url, quote=True))
     html = replace_single_placeholder(
@@ -195,8 +261,8 @@ def write_sitemap(output_dir: Path, routes: list[str], site_url: str | None) -> 
 def write_advanced_pages(
     output_dir: Path,
     outputs: dict[str, Path],
+    manifest,
 ) -> None:
-    manifest = load_advanced_manifest(ADVANCED_MANIFEST_PATH)
     template = ADVANCED_TEMPLATE_PATH.read_text(encoding="utf-8")
     for item in manifest.items:
         html = render_advanced_page(
@@ -216,6 +282,7 @@ def build_site(
     site_url: str | None = None,
 ) -> dict[str, Path]:
     manifest = load_manifest(MANIFEST_PATH)
+    advanced_manifest = load_advanced_manifest(ADVANCED_MANIFEST_PATH)
     rendered_items = render_manifest_items(ROOT, manifest)
     specs = build_page_specs(manifest)
     anchor_routes = build_anchor_route_index(manifest, rendered_items)
@@ -224,7 +291,14 @@ def build_site(
 
     output_dir.mkdir(parents=True, exist_ok=True)
     home_path = output_dir / "index.html"
-    write_learning_map(home_path, manifest, anchor_routes, site_url)
+    write_learning_map(
+        home_path,
+        manifest,
+        anchor_routes,
+        rendered_items,
+        advanced_manifest,
+        site_url,
+    )
     outputs[""] = home_path
 
     for spec in specs:
@@ -256,7 +330,7 @@ def build_site(
         target.write_text(html, encoding="utf-8", newline="")
         outputs[spec.route] = target
 
-    write_advanced_pages(output_dir, outputs)
+    write_advanced_pages(output_dir, outputs, advanced_manifest)
     write_sitemap(output_dir, list(outputs), site_url)
     copy_tree(ROOT / "assets", output_dir / "assets")
     copy_tree(ROOT / "_shared", output_dir / "_shared")
