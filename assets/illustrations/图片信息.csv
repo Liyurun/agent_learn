@@ -1,0 +1,214 @@
+﻿编号,文件名,资料位置,建议插入位置,图片内容,状态
+1,001-Agent全书知识地图.png,content/frontmatter/README.md,全书知识地图之后,十篇内容架构及从基础到生产与面试的学习路线,已生成
+2,002-自动化自主性光谱.png,content/part-01-foundations/n02-workflow-copilot-rpa-与-agent/README.md,核心概念之后,RPA、Workflow、Copilot、Agent的控制权与人工角色对比,已生成
+3,003-Agent核心运行循环.png,content/part-01-foundations/n03-agent-的运行循环与核心组件/README.md,工作机制之后,目标、决策、行动、观察、记忆、终止校验的闭环,已生成
+4,004-提示工程工具箱.png,content/part-02-primitives/n04-指令与系统化提示工程/README.md,核心概念之后,零样本、少样本、思维链、自洽性、结构化提示与软硬护栏,已生成
+5,005-推理规划与搜索能力阶梯.png,content/part-02-primitives/n05-推理-规划与搜索/README.md,工作机制之后,CoT、ReAct、ToT的能力、成本与复杂度递进,已生成
+6,006-Function Calling职责边界.png,content/part-02-primitives/n06-工具与-function-calling/README.md,工作机制之后,模型提出调用，运行时校验、执行并回填结果,已生成
+7,007-三层记忆宫殿.png,content/part-02-primitives/n08-记忆系统/README.md,核心概念之后,短期记忆、工作状态、长期记忆及长期记忆分类,已生成
+8,008-Agentic工作流与多智能体协作.png,content/part-03-orchestration/n11-agentic-工作流模式/README.md,模式选择之前,提示链、路由、并行、编排者-工作者、评估-优化,已生成
+9,009-RAG到Agentic RAG.png,content/part-04-context-retrieval/n14-agentic-rag-与-grounding/README.md,工作机制之后,固定检索快路与自主检索慢路及证据校验,已生成
+10,010-上下文工程行李箱.png,content/part-04-context-retrieval/n15-上下文工程/README.md,核心模型之后,有限窗口中的Write、Select、Compress、Isolate及预算预留,已生成
+11,011-生产级安全与质量堡垒.png,content/part-06-quality-safety/n26-安全-权限与人工审批/README.md,分层控制之后,六层纵深防御与评估、Trace、回归测试、人工审批,已生成
+12,012-从Demo到生产与面试.png,content/part-07-production/n29-生产部署/README.md,部署演进之后,从最小Demo到性能、部署、恢复、数据飞轮与面试,已生成
+13,013-普通ReAct与反思Agent.png,content/part-02-primitives/n09-反思与自我改进/README.md,工作机制之后,执行层与元认知监督层、可信反馈和经验沉淀,已生成
+14,014-工具调用运行时双铁律.png,content/part-02-primitives/n07-工具调用协议状态机/README.md,核心概念之后,模型只说不做、运行时执行、模型无状态、完整上下文,已生成
+15,015-MCP集成枢纽.png,content/part-03-orchestration/n10-mcp-模型上下文协议/README.md,核心概念之后,Host、Client、Server与Tools、Resources、Prompts,已生成
+16,016-多智能体三种协作拓扑.png,content/part-03-orchestration/n12-多智能体系统/README.md,拓扑与通信之后,Supervisor、Network、Sequential及三道上线核验,已生成
+17,017-RAG检索工程流水线.png,content/part-04-context-retrieval/n13-rag-基础与检索工程/README.md,工作机制之后,离线索引与在线权限过滤、召回、融合、重排、组装,已生成
+18,018-Grounding证据链.png,content/part-04-context-retrieval/n14-agentic-rag-与-grounding/README.md,Grounding内容之后,声明到证据片段再到授权来源版本的可追溯链路,已生成
+19,019-长任务状态与检查点.png,content/part-04-context-retrieval/n16-长任务状态管理/README.md,状态模型与提交边界之后,工作记忆、任务状态、原始记录、检查点与幂等键,已生成
+20,020-Agent框架选型.png,content/part-05-frameworks/n17-框架全景与选型/README.md,选型决策之后,轻量工具代理、类型契约、状态编排的选择依据,已生成
+21,021-PydanticAI三层输出约束.png,content/part-05-frameworks/n19-pydanticai/README.md,工作机制之后,框架解析、字段校验、业务校验及事实正确性边界,已生成
+22,022-LangGraph状态车站.png,content/part-05-frameworks/n20-langgraph-与状态图/README.md,工作机制之后,状态、节点、条件边、Reducer、检查点与Interrupt,已生成
+23,023-Agent评估四层仪表盘.png,content/part-06-quality-safety/n22-agent-评估基础/README.md,评估对象之后,结果、过程、系统、安全四层指标体系,已生成
+24,024-LLM裁判不是金标准.png,content/part-06-quality-safety/n23-llm-裁判与评估进阶/README.md,裁判模式之后,单项评分、成对比较、轨迹裁判与偏差校准,已生成
+25,025-公开基准与业务验收.png,content/part-06-quality-safety/n24-基准与能力边界/README.md,基准的读取方法之后,公开基准与真实业务验收的范围、协议和评分差异,已生成
+26,026-能力矩阵四种状态.png,content/part-06-quality-safety/n24-基准与能力边界/README.md,内部能力矩阵之后,已通过、条件通过、未验证、已知失败及版本记录,已生成
+27,027-Agent Trace侦探现场.png,content/part-06-quality-safety/n25-可观测性与系统调试/README.md,Trace模型之后,根Trace、各类Span及根因定位三步法,已生成
+28,028-权限与人工审批.png,content/part-06-quality-safety/n26-安全-权限与人工审批/README.md,执行闸门之后,RBAC角色权限与单次人工审批的职责差异,已生成
+29,029-Agent测试金字塔.png,content/part-06-quality-safety/n27-测试-回归与故障恢复/README.md,测试分层之后,单元、契约、集成、轨迹回归与在线验证,已生成
+30,030-三类缓存机制.png,content/part-07-production/n28-成本与性能工程/README.md,三类缓存之后,KV Cache、Prompt Caching和语义缓存的分层作用,已生成
+31,031-Agent部署演进六阶段.png,content/part-07-production/n29-生产部署/README.md,部署演进之后,本地脚本到容器、同步、异步、弹性与混合部署,已生成
+32,032-数据与质量飞轮.png,content/part-07-production/n30-数据与质量演进/README.md,从事件到改进之后,采集、脱敏标注、评估、最小改动、灰度与回滚闭环,已生成
+33,033-Coding Agent任务闭环.png,content/part-08-frontiers/n31-coding-agent/README.md,任务闭环之后,仓库规则、结构地图、问题复现、最小补丁、测试与证据,已生成
+34,034-Computer Use定位优先级.png,content/part-08-frontiers/n32-多模态与-computer-use/README.md,操作循环之后,DOM/无障碍树、Set-of-Mark、视觉坐标及动作后重观测,已生成
+35,035-语音Agent两类架构.png,content/part-08-frontiers/n33-语音与实时交互-agent/README.md,两类架构之后,级联语音与端到端语音架构及实时打断机制,已生成
+36,036-模型后训练方法谱系.png,content/part-08-frontiers/n34-模型后训练与-agent-能力塑形/README.md,方法谱系之后,SFT、RLHF/PPO、DPO、GRPO及训练必要性判断,已生成
+37,037-最小Agent运行时.png,content/part-09-projects/p1-裸写最小-agent/README.md,系统边界和架构之后,上下文、模型决策、执行闸门、工具注册表与运行时控制权,已生成
+38,038-ReAct与Plan-and-Execute.png,content/part-09-projects/p1-裸写最小-agent/README.md,从ReAct到Plan-and-Execute之后,即时反馈决策与前置规划执行的差异,已生成
+39,039-企业RAG三道控制点.png,content/part-09-projects/p2-端到端-rag-问答/README.md,系统边界和架构之后,权限过滤、证据判定和引用校验三道控制点,已生成
+40,040-Chunk分块尺寸平衡.png,content/part-09-projects/p2-端到端-rag-问答/README.md,文档与命中契约之后,分块过小、合理与过大的语义和噪声权衡,已生成
+41,041-上下文装配优先级.png,content/part-09-projects/p3-上下文工程长任务-agent/README.md,块的价值与装配顺序之后,规则事实、计划消息、长期记忆、历史摘要与输出预留,已生成
+42,042-不可逆动作安全提交.png,content/part-04-context-retrieval/n16-长任务状态管理/README.md,状态模型与提交边界之后,幂等键、外部动作、结果记录、检查点和崩溃缝隙,已生成
+43,043-多智能体客服中心.png,content/part-09-projects/p4-生产级多智能体客服/README.md,系统边界和架构之后,Supervisor、三类专家、输入输出护栏与转人工,已生成
+44,044-退款审批两段式安全.png,content/part-09-projects/p4-生产级多智能体客服/README.md,护栏与人工审批之后,持久化待审批、人工确认与幂等退款执行,已生成
+45,045-Coding Agent三种仓库检索.png,content/part-09-projects/p5-coding-agent/README.md,先建立仓库地图之后,文本搜索、符号索引和向量检索的适用差异,已生成
+46,046-Agent系统设计五步法.png,content/part-10-interview/m2-系统设计题/README.md,Q1之后,澄清约束、选择形态、数据流、失败分支和工程权衡,已生成
+47,047-Agent故障排查首个偏离点.png,content/part-10-interview/m4-场景诊断题/README.md,Q1之后,固定样本、Trace回放、首个偏离点、最小修复与验证,已生成
+48,048-两分钟项目讲解.png,content/part-10-interview/m5-项目讲解与追问/README.md,Q1之后,问题约束、个人职责、架构决策、失败修复、证据和边界,已生成
+49,049-30天Agent学习路线.png,content/appendices/app-d-学习路线/README.md,D.1路线总览之后,四周学习阶段、每日产出和每周复盘,已生成
+50,050-三条阅读路径.png,content/frontmatter/README.md,三条阅读路径之后,入门、工程和面试三类阅读目标与路径,已生成
+51,051-Agent资料筛选五问.png,content/appendices/app-a-资料与书单/README.md,资源选择建议之后,来源、版本、边界、复现和真实痛点筛选,已生成
+52,052-Agent推理论文演进.png,content/appendices/app-b-论文导读/README.md,推理与规划之后,CoT、ReAct、Reflexion与多路径搜索演进,已生成
+53,053-RAG技术演进.png,content/appendices/app-b-论文导读/README.md,RAG相关论文之后,基础RAG、Self-RAG、CRAG和Agentic RAG演进,已生成
+54,054-八组易混术语.png,content/appendices/app-c-术语速查/README.md,最易混淆的术语辨析之后,八组Agent高频易混概念的核心边界,已生成
+55,055-PREP-T技术短答.png,content/part-10-interview/m7-答题结构-红旗与行为面试/README.md,Q1之后,结论、依据、实例、落地和权衡的短答结构,已生成
+56,056-STAR行为题.png,content/part-10-interview/m7-答题结构-红旗与行为面试/README.md,Q6之后,背景、职责、行动、结果及个人贡献表达,已生成
+57,057-Agent面试三类红旗.png,content/part-10-interview/m7-答题结构-红旗与行为面试/README.md,Q3之后,认知类、工程类和态度类风险信号,已生成
+58,058-Agent任务成本三杠杆.png,content/part-07-production/n28-成本与性能工程/README.md,成本模型之后,减少步数、压缩输入和降低单位Token价格,已生成
+59,059-模型路由分级.png,content/part-07-production/n28-成本与性能工程/README.md,模型路由之后,按任务复杂度、结构与风险分配模型,已生成
+60,060-预算保护控制台.png,content/part-07-production/n28-成本与性能工程/README.md,最小实现之前,上下文组装、Token估算、预算校验与超限降级,已生成
+61,061-提示策略成本收益阶梯.png,content/part-02-primitives/n04-指令与系统化提示工程/README.md,工作机制之后,零样本、少样本、思维链和自洽性的效果与成本递进,已生成
+62,062-软护栏与硬护栏.png,content/part-02-primitives/n04-指令与系统化提示工程/README.md,生产深化之后,概率性语言约束与确定性执行校验的差异,已生成
+63,063-提示工程评估闭环.png,content/part-02-primitives/n04-指令与系统化提示工程/README.md,评估与故障之前,提示版本、固定测试集、指标比较、灰度与回滚,已生成
+64,064-模型可见的工具三要素.png,content/part-02-primitives/n06-工具与-function-calling/README.md,核心概念之后,工具名称、描述、参数Schema及函数体不可见边界,已生成
+65,065-多工具三类失效.png,content/part-02-primitives/n06-工具与-function-calling/README.md,生产深化之后,选择困难、幻觉工具名、执行失败及运行时兜底,已生成
+66,066-并行工具调用ID配对.png,content/part-02-primitives/n07-工具调用协议状态机/README.md,并行执行示例之后,并行乱序结果通过call_id准确配对,已生成
+67,067-流式参数收齐再执行.png,content/part-02-primitives/n07-工具调用协议状态机/README.md,流式分片示例之后,分片归桶累积、完整JSON解析及禁止提前执行,已生成
+68,068-记忆完整生命周期.png,content/part-02-primitives/n08-记忆系统/README.md,工作机制之后,抽取、巩固、检索、更新、遗忘及冲突处理,已生成
+69,069-三类长期记忆.png,content/part-02-primitives/n08-记忆系统/README.md,核心概念之后,语义、情景和程序记忆的内容边界,已生成
+70,070-记忆混合存储路由.png,content/part-02-primitives/n08-记忆系统/README.md,生产深化之后,结构化存储、向量记忆和知识图谱的路由分工,已生成
+71,071-Reflexion与Self-Refine.png,content/part-02-primitives/n09-反思与自我改进/README.md,核心概念之后,跨尝试经验积累与单任务迭代打磨的差异,已生成
+72,072-反馈信号可靠度阶梯.png,content/part-02-primitives/n09-反思与自我改进/README.md,工作机制之后,模型自评、工具校验、单测和人类反馈可靠度,已生成
+73,073-MCP三类角色.png,content/part-03-orchestration/n10-mcp-模型上下文协议/README.md,核心概念之后,Host、Client、Server的职责与连接边界,已生成
+74,074-MCP三类原语控制权.png,content/part-03-orchestration/n10-mcp-模型上下文协议/README.md,工作机制之后,Tools、Resources、Prompts的控制主体和风险边界,已生成
+75,075-五种Agentic工作流.png,content/part-03-orchestration/n11-agentic-工作流模式/README.md,工作机制之后,提示链、路由、并行、编排者-工作者、评估-优化,已生成
+76,076-工作流选择优先级.png,content/part-03-orchestration/n11-agentic-工作流模式/README.md,模式选择之后,从单次调用逐级升级并优先最低自主性,已生成
+77,077-并行化两种模式.png,content/part-03-orchestration/n11-agentic-工作流模式/README.md,工作机制之后,Sectioning任务分片与Voting同题多答聚合,已生成
+78,078-结构化交接包.png,content/part-03-orchestration/n12-多智能体系统/README.md,拓扑与通信之后,身份、目标、事实、尝试、证据和下一动作,已生成
+79,079-多智能体六层排障.png,content/part-03-orchestration/n12-多智能体系统/README.md,评估与故障之后,分解、召回、组装、冲突、协调和成本六层,已生成
+80,080-双编码器与交叉编码器.png,content/part-04-context-retrieval/n13-rag-基础与检索工程/README.md,检索与排序之后,快速大规模召回与少量候选精排的差异,已生成
+81,081-RRF排名融合.png,content/part-04-context-retrieval/n13-rag-基础与检索工程/README.md,检索与排序之后,基于名次积分融合稠密与稀疏检索结果,已生成
+82,082-RAG四项评估指标.png,content/part-04-context-retrieval/n13-rag-基础与检索工程/README.md,评估与故障之后,召回率、精度、忠实度和答案相关性,已生成
+83,083-Agentic RAG四类决策.png,content/part-04-context-retrieval/n14-agentic-rag-与-grounding/README.md,工作机制之后,必要性、检索计划、证据充分性和声明支撑度,已生成
+84,084-上下文四类失效.png,content/part-04-context-retrieval/n15-上下文工程/README.md,核心模型之后,上下文污染、分心、混淆和冲突及处理,已生成
+85,085-上下文四策略.png,content/part-04-context-retrieval/n15-上下文工程/README.md,Write、Select、Compress、Isolate之后,Write、Select、Compress、Isolate协同优化主上下文,已生成
+86,086-稳定前缀与动态后缀.png,content/part-04-context-retrieval/n15-上下文工程/README.md,动态组装之后,稳定规则工具前缀与动态请求观察后缀及缓存复用,已生成
+87,087-三类窗外信息.png,content/part-04-context-retrieval/n16-长任务状态管理/README.md,三类窗外信息之后,工作记忆、任务状态与原始记录的对象和一致性差异,已生成
+88,088-崩溃提交缝隙.png,content/part-04-context-retrieval/n16-长任务状态管理/README.md,状态模型与提交边界之后,外部成功本地未记录的崩溃窗口与安全措施,已生成
+89,089-时间旅行调试边界.png,content/part-04-context-retrieval/n16-长任务状态管理/README.md,检查点与时间旅行之后,检查点分叉重放与外部副作用不可撤销边界,已生成
+90,090-三种Agent框架范式.png,content/part-05-frameworks/n17-框架全景与选型/README.md,三种稳定范式之后,代码动作、JSON工具调用和状态图编排的差异,已生成
+91,091-业务层与框架适配层.png,content/part-05-frameworks/n17-框架全景与选型/README.md,最小实现之后,稳定业务契约与可替换框架适配层边界,已生成
+92,092-CodeAgent运行循环.png,content/part-05-frameworks/n18-smolagents/README.md,工作机制之后,生成代码、隔离执行、Observation与终止判断,已生成
+93,093-代码执行安全分层.png,content/part-05-frameworks/n18-smolagents/README.md,安全与生产限制之后,一次性容器、资源网络权限、鉴权和审计,已生成
+94,094-CodeAct与JSON调用.png,content/part-05-frameworks/n18-smolagents/README.md,工作机制之后,代码动作表达力风险与JSON调用类型审计差异,已生成
+95,095-PydanticAI重试边界.png,content/part-05-frameworks/n19-pydanticai/README.md,生产边界之后,模型级、系统级和不可重试错误的分诊,已生成
+96,096-依赖注入与分层测试.png,content/part-05-frameworks/n19-pydanticai/README.md,工作机制之后,RunContext、Fake依赖、真实服务与显式注入,已生成
+97,097-LangGraph生产风险.png,content/part-05-frameworks/n20-langgraph-与状态图/README.md,生产边界之后,副作用、幂等恢复、Schema、线程隔离、超时和敏感字段风险,已生成
+98,098-四类Agent框架边界.png,content/part-05-frameworks/n21-其他框架与供应商抽象/README.md,框架边界之后,CrewAI、Agents SDK、LlamaIndex和AutoGen适用边界,已生成
+99,099-供应商抽象四层.png,content/part-05-frameworks/n21-其他框架与供应商抽象/README.md,供应商抽象之后,业务、模型网关、编排、MCP工具层与能力协商,已生成
+100,100-离线到在线评估.png,content/part-06-quality-safety/n22-agent-评估基础/README.md,离线与在线之后,离线评估、门禁、影子、灰度、在线监测和Badcase回流,已生成
+101,101-结果与轨迹联合诊断.png,content/part-06-quality-safety/n22-agent-评估基础/README.md,故障定位之后,结合结果和轨迹判断计划、工具、生成与越权问题,已生成
+102,102-LLM裁判四类偏差.png,content/part-06-quality-safety/n23-llm-裁判与评估进阶/README.md,偏差与校准之后,位置、长度、自我、风格偏差及换序匿名复核,已生成
+103,103-LLM裁判校准.png,content/part-06-quality-safety/n23-llm-裁判与评估进阶/README.md,偏差与校准之后,双人标注、一致性、版本化校准集与阈值调整,已生成
+104,104-数据污染六种泄漏.png,content/part-06-quality-safety/n24-基准与能力边界/README.md,合成数据与污染之后,精确近似重复、实体交叉、时间跨集泄漏与风格偏置,已生成
+105,105-Metrics Logs Traces Evaluation.png,content/part-06-quality-safety/n25-可观测性与系统调试/README.md,指标与调试之后,指标、日志、轨迹和质量评估的职责互补,已生成
+106,106-Agent安全六层防线.png,content/part-06-quality-safety/n26-安全-权限与人工审批/README.md,分层控制之后,输入、上下文、执行、沙箱、输出和审计六层,已生成
+107,107-提示注入攻击链.png,content/part-06-quality-safety/n26-安全-权限与人工审批/README.md,威胁模型之后,不可信输入到注入、越权、外传和耗尽的攻击路径,已生成
+108,108-PII全流程脱敏.png,content/part-06-quality-safety/n26-安全-权限与人工审批/README.md,生产限制之后,模型入口、日志与外发出口的统一脱敏治理,已生成
+109,109-错误类型与恢复策略.png,content/part-06-quality-safety/n27-测试-回归与故障恢复/README.md,错误处理与恢复之后,参数、网络、权限和部分成功错误的对应恢复策略,已生成
+110,110-回归门禁发布.png,content/part-06-quality-safety/n27-测试-回归与故障恢复/README.md,回归门禁之后,版本基线、影子流量、金丝雀、监控和回滚,已生成
+111,111-故障闭环.png,content/part-06-quality-safety/n27-测试-回归与故障恢复/README.md,故障闭环之后,Trace复现、最小夹具、修复验证、回归和监控,已生成
+112,112-同步与异步任务分流.png,content/part-07-production/n29-生产部署/README.md,运行机制之后,入口鉴权、run_id、短任务SSE与长任务队列Worker,已生成
+113,113-Agent状态外置三层.png,content/part-07-production/n29-生产部署/README.md,运行机制之后,会话状态、长期事实、Checkpoint与弹性恢复,已生成
+114,114-生产部署四类故障.png,content/part-07-production/n29-生产部署/README.md,生产故障之后,504、缩容丢任务、429与重复副作用的治理,已生成
+115,115-质量成本延迟三角.png,content/part-07-production/n30-数据与质量演进/README.md,质量闭环之后,质量底线、预算上限和延迟SLO联合回归,已生成
+116,116-可改进运行记录.png,content/part-07-production/n30-数据与质量演进/README.md,数据契约之后,运行标识、版本、轨迹、成本、终态和授权属性,已生成
+117,117-Badcase四类假改进.png,content/part-07-production/n30-数据与质量演进/README.md,常见故障之后,指标体验背离、错误反复、回归破坏和盲目微调,已生成
+118,118-Coding Agent上下文分层.png,content/part-08-frontiers/n31-coding-agent/README.md,代码库理解与上下文之后,版本库、目录规则、当前任务和隔离子任务,已生成
+119,119-Coding Agent常见故障.png,content/part-08-frontiers/n31-coding-agent/README.md,故障定位之后,未修复、大diff、漏调用点、假绿测试和绕圈,已生成
+120,120-Coding Agent权限分级.png,content/part-08-frontiers/n31-coding-agent/README.md,安全边界之后,自动读、隔离写与高危动作人工确认,已生成
+121,121-Computer Use标准操作循环.png,content/part-08-frontiers/n32-多模态与-computer-use/README.md,操作循环之后,截图快照、理解、动作、定位、执行、稳定与重观测,已生成
+122,122-Computer Use与RPA互补.png,content/part-08-frontiers/n32-多模态与-computer-use/README.md,与RPA的关系之后,稳定高频RPA与多变长尾Computer Use混合协作,已生成
+123,123-Computer Use安全防护.png,content/part-08-frontiers/n32-多模态与-computer-use/README.md,安全边界之后,沙箱、最小权限、高危确认、审计和会话隔离,已生成
+124,124-语音实时事件链.png,content/part-08-frontiers/n33-语音与实时交互-agent/README.md,实时机制之后,VAD、转录、端点、生成合成、监听和打断,已生成
+125,125-语音首音延迟预算.png,content/part-08-frontiers/n33-语音与实时交互-agent/README.md,延迟预算之后,端点、STT、TTFT、TTS和缓冲组成的首音延迟,已生成
+126,126-语音Agent六类故障.png,content/part-08-frontiers/n33-语音与实时交互-agent/README.md,故障定位之后,抢话、打断、自声、静默、实体与重复操作故障,已生成
+127,127-先判断是否需要训练.png,content/part-08-frontiers/n34-模型后训练与-agent-能力塑形/README.md,先判断是否需要训练之后,优先排查提示、工具、检索和反馈后再训练,已生成
+128,128-后训练方法选择.png,content/part-08-frontiers/n34-模型后训练与-agent-能力塑形/README.md,方法谱系之后,SFT、DPO、RLHF/PPO和GRPO的数据反馈适配,已生成
+129,129-Agent能力塑形映射.png,content/part-08-frontiers/n34-模型后训练与-agent-能力塑形/README.md,Agent能力映射之后,工具、规划、格式、安全、反思与训练反馈,已生成
+130,130-RAG项目六层评估.png,content/part-09-projects/p2-端到端-rag-问答/README.md,测试、观测和故障注入之后,检索、重排、生成、引用、系统和安全六层评估,已生成
+131,131-客服三层路由.png,content/part-09-projects/p4-生产级多智能体客服/README.md,三层路由之后,规则红线、模型分类和低置信度人工兜底,已生成
+132,132-系统上线四维验收.png,content/part-10-interview/m2-系统设计题/README.md,Q6之后,质量、安全、延迟和成本四维上线验收,已生成
+133,133-长任务Token预算.png,content/part-09-projects/p3-上下文工程长任务-agent/README.md,预算先于组装之后,总窗口、输出预留、安全余量与输入预算,已生成
+134,134-上下文与长期记忆边界.png,content/part-09-projects/p3-上下文工程长任务-agent/README.md,长期记忆检索之后,本轮工作集与外部候选库及检索权限准入,已生成
+135,135-上下文工程五类故障.png,content/part-09-projects/p3-上下文工程长任务-agent/README.md,测试、观测和故障注入之后,预留占用、事实裁剪、摘要失真、记忆污染和检查点损坏,已生成
+136,136-Agent、Workflow与单次LLM.png,content/part-10-interview/m1-概念题/README.md,Q1之后,单次生成、固定工作流与Agent动态反馈决策,已生成
+137,137-ReAct为何常用.png,content/part-10-interview/m1-概念题/README.md,Q2之后,Thought、Action、Observation及反馈纠偏和硬终止,已生成
+138,138-Function Calling端到端.png,content/part-10-interview/m1-概念题/README.md,Q4之后,Schema、调用申请、校验执行、结果回填与回答,已生成
+139,139-MCP、Function Calling与多Agent.png,content/part-10-interview/m1-概念题/README.md,Q5之后,调用意图、标准集成与多角色任务协作边界,已生成
+140,140-上下文工程与提示工程.png,content/part-10-interview/m1-概念题/README.md,Q6之后,指令设计与全量输入选择组装压缩隔离的差异,已生成
+141,141-三框架选型面试题.png,content/part-10-interview/m3-框架与代码实操题/README.md,Q3之后,smolagents、PydanticAI和LangGraph适用场景,已生成
+142,142-可靠工具三层设计.png,content/part-10-interview/m3-框架与代码实操题/README.md,Q4之后,用途边界、参数Schema和业务权限运行时校验,已生成
+143,143-多轮对话状态管理.png,content/part-10-interview/m3-框架与代码实操题/README.md,Q5之后,会话隔离、状态持久化、动态上下文与历史摘要,已生成
+144,144-流式输出与工具调用.png,content/part-10-interview/m3-框架与代码实操题/README.md,Q6之后,内容流与工具流分离、参数组装校验和结果回填,已生成
+145,145-幻觉分层归因.png,content/part-10-interview/m4-场景诊断题/README.md,Q2之后,检索、上下文、生成、引用和行动幻觉分层治理,已生成
+146,146-延迟与成本归因.png,content/part-10-interview/m4-场景诊断题/README.md,Q3之后,模型、检索、工具、排队和重试耗时归因,已生成
+147,147-人机操作风险分级.png,content/part-10-interview/m4-场景诊断题/README.md,Q7之后,低中高风险自动化、确认审批和灰度放量,已生成
+148,148-七类Agent项目边界.png,content/part-10-interview/m5-项目讲解与追问/README.md,Q1之后,七类项目的核心考察点与生产边界,已生成
+149,149-项目证据层级.png,content/part-10-interview/m5-项目讲解与追问/README.md,Q7之后,线上、离线、回归、Demo证据及局限说明,已生成
+150,150-答不上来时如何处理.png,content/part-10-interview/m7-答题结构-红旗与行为面试/README.md,Q4之后,澄清、已知、验证、不确定性与学习计划,已生成
+151,151-连环追问应对.png,content/part-10-interview/m7-答题结构-红旗与行为面试/README.md,Q5之后,收束结论、解释取舍、边界和验证方案,已生成
+152,152-分类题库知识地图.png,content/part-10-interview/m6-分类题库/README.md,章节开头之后,题库按概念、能力、协议、框架、RAG和工程分区,已生成
+153,153-Agent四级学习资料包.png,content/appendices/app-a-资料与书单/README.md,分级学习路线之后,按可用时间和目标选择四种资料包,已生成
+154,154-英文一手资料三步读法.png,content/appendices/app-a-资料与书单/README.md,保持信息更新的渠道之后,中文框架、英文核心段落和术语表三步法,已生成
+155,155-论文三档读法.png,content/appendices/app-b-论文导读/README.md,B.1如何读这些论文之后,必读、理解核心、了解存在三档阅读策略,已生成
+156,156-术语速记法.png,content/appendices/app-c-术语速查/README.md,术语记忆法之后,对比、场景和反例卡连接术语与面试表达,已生成
+157,157-指令层级与冲突处理.png,content/part-02-primitives/n04-指令与系统化提示工程/README.md,核心概念之后,系统、开发者、用户和不可信内容的层级裁决,已生成
+158,158-自洽性多链投票.png,content/part-02-primitives/n04-指令与系统化提示工程/README.md,自洽性示例之后,多次独立采样和多数投票的稳定性成本权衡,已生成
+159,159-推理故障首错定位.png,content/part-02-primitives/n05-推理-规划与搜索/README.md,评估与故障之后,保存轨迹、定位首错并区分推理观察终止根因,已生成
+160,160-工具参数四重校验.png,content/part-02-primitives/n06-工具与-function-calling/README.md,参数校验示例之后,必填、类型、枚举和范围四重校验,已生成
+161,161-工具路由与有限重试.png,content/part-02-primitives/n06-工具与-function-calling/README.md,工具路由示例之后,候选裁剪、路由、瞬时错误有限重试和降级,已生成
+162,162-结构化错误返回.png,content/part-02-primitives/n06-工具与-function-calling/README.md,结构化结果示例之后,统一成功失败结果和可重试标记，禁止裸异常,已生成
+163,163-多厂商协议归一化.png,content/part-02-primitives/n07-工具调用协议状态机/README.md,协议归一化示例之后,不同厂商调用报文统一为id name args,已生成
+164,164-工具循环双终止入口.png,content/part-02-primitives/n07-工具调用协议状态机/README.md,工作机制之后,模型自然终止与步数预算触顶强制降级,已生成
+165,165-记忆租户隔离.png,content/part-02-primitives/n08-记忆系统/README.md,生产深化之后,按user_id在召回阶段硬隔离，防止跨用户泄露,已生成
+166,166-记忆写入策略.png,content/part-02-primitives/n08-记忆系统/README.md,工作机制之后,稳定事实偏好经验准入及敏感推断拦截,已生成
+167,167-反思故障五层诊断.png,content/part-02-primitives/n09-反思与自我改进/README.md,评估与故障之后,信号、反馈、记忆、控制和预算五层排障,已生成
+168,168-MCP会话协商.png,content/part-03-orchestration/n10-mcp-模型上下文协议/README.md,工作机制之后,初始化、能力协商发现、调用与结构化返回,已生成
+169,169-多智能体上线三关.png,content/part-03-orchestration/n12-多智能体系统/README.md,使用边界之后,必要性、可分性和经济性三关及单Agent回退,已生成
+170,170-三类多智能体拓扑风险.png,content/part-03-orchestration/n12-多智能体系统/README.md,拓扑与通信之后,Supervisor、Network、Sequential的典型风险,已生成
+171,171-五种工作流轨迹形状.png,content/part-03-orchestration/n11-agentic-工作流模式/README.md,评估与故障之后,线性、分支、分叉、多工作者和回环轨迹识别,已生成
+172,172-RAG离线与在线双管线.png,content/part-04-context-retrieval/n13-rag-基础与检索工程/README.md,工作机制之后,离线解析索引与在线权限召回重排组装,已生成
+173,173-稠密与稀疏混合检索.png,content/part-04-context-retrieval/n13-rag-基础与检索工程/README.md,检索与排序之后,语义相似和关键词命中的互补召回,已生成
+174,174-RAG快慢路由.png,content/part-04-context-retrieval/n14-agentic-rag-与-grounding/README.md,快慢路由之后,简单快路、复杂慢路和高风险人工澄清,已生成
+175,175-声明证据来源三联单.png,content/part-04-context-retrieval/n14-agentic-rag-与-grounding/README.md,工作机制之后,claim evidence source及版本片段可追溯关系,已生成
+176,176-上下文预算计算.png,content/part-04-context-retrieval/n15-上下文工程/README.md,核心模型之后,窗口减输出预留和安全余量得到输入预算,已生成
+177,177-原子检查点与幂等复用.png,content/part-04-context-retrieval/n16-长任务状态管理/README.md,最小实现之后,原子写检查点、幂等键和已有结果复用,已生成
+178,178-框架过度抽象四类故障.png,content/part-05-frameworks/n17-框架全景与选型/README.md,评估与故障之后,过度编排、暗改上下文、升级漂移和私有API耦合,已生成
+179,179-smolagents故障排查.png,content/part-05-frameworks/n18-smolagents/README.md,评估与故障之后,生成错误、工具不调用、无限循环的分层检查,已生成
+180,180-结构合规不等于事实正确.png,content/part-05-frameworks/n19-pydanticai/README.md,生产边界之后,结构字段合规与事实证据业务校验边界,已生成
+181,181-LangGraph状态合并.png,content/part-05-frameworks/n20-langgraph-与状态图/README.md,工作机制之后,节点状态增量经Reducer按通道规则合并,已生成
+182,182-检查点身份三件套.png,content/part-05-frameworks/n20-langgraph-与状态图/README.md,生产边界之后,thread_id、checkpointer和Schema版本核验,已生成
+183,183-供应商切换演练.png,content/part-05-frameworks/n21-其他框架与供应商抽象/README.md,生产边界之后,主备供应商切换及回归、格式和能力验证,已生成
+184,184-评估样本最小契约.png,content/part-06-quality-safety/n22-agent-评估基础/README.md,最小实现之后,评估样本ID、场景、结果、工具预算和版本字段,已生成
+185,185-LLM裁判生产隔离.png,content/part-06-quality-safety/n23-llm-裁判与评估进阶/README.md,生产边界之后,只评分、禁工具、注入隔离、脱敏和人工复核,已生成
+186,186-生产基准四层隔离.png,content/part-06-quality-safety/n24-基准与能力边界/README.md,生产边界之后,公开、开发、冻结测试、隐藏集及新鲜样本,已生成
+187,187-可观测采样策略.png,content/part-06-quality-safety/n25-可观测性与系统调试/README.md,生产边界之后,错误全采样、普通比例采样、高基数和脱敏,已生成
+188,188-执行闸门五项检查.png,content/part-06-quality-safety/n26-安全-权限与人工审批/README.md,执行闸门之后,身份、权限、参数、资源范围和审批令牌,已生成
+189,189-部分成功的恢复策略.png,content/part-06-quality-safety/n27-测试-回归与故障恢复/README.md,错误处理与恢复之后,逐项状态、失败重试补偿与幂等保护,已生成
+190,190-缓存零命中排查.png,content/part-07-production/n28-成本与性能工程/README.md,故障定位之后,稳定前缀、缓存键、随机字段、TTL和参数检查,已生成
+191,191-Agent生产韧性组合.png,content/part-07-production/n29-生产部署/README.md,韧性与发布之后,超时、熔断、限流、重试、幂等、降级和回滚,已生成
+192,192-Coding Agent外部完成判定.png,content/part-09-projects/p5-coding-agent/README.md,外部完成判定之后,目标测试、静态检查、diff审查和验收证据,已生成
+193,193-Coding Agent检查点策略.png,content/part-09-projects/p5-coding-agent/README.md,检查点之后,复现、补丁、测试、回归与证据关键检查点,已生成
+194,194-代码库地图构建.png,content/part-09-projects/p5-coding-agent/README.md,先建立仓库地图之后,仓库规则、目录、入口、测试和变更边界,已生成
+195,195-Computer Use每步重观测.png,content/part-08-frontiers/n32-多模态与-computer-use/README.md,操作循环之后,动作后等待稳定、重截图和状态验证,已生成
+196,196-语音打断与静默处理.png,content/part-08-frontiers/n33-语音与实时交互-agent/README.md,生产实践之后,barge-in、工具静默、进度提示、重连与防重复,已生成
+197,197-后训练数据最小形态.png,content/part-08-frontiers/n34-模型后训练与-agent-能力塑形/README.md,最小数据形态之后,输入、动作、工具结果、输出、偏好和奖励字段,已生成
+198,198-能力边界矩阵.png,content/part-06-quality-safety/n24-基准与能力边界/README.md,内部能力矩阵之后,四态能力分类、上线范围和人工兜底,已生成
+199,199-项目讲解STAR增强.png,content/part-10-interview/m5-项目讲解与追问/README.md,Q8之后,真实约束、个人任务、行动、结果与复盘,已生成
+200,200-系统设计收尾.png,content/part-10-interview/m2-系统设计题/README.md,Q6之后,指标、风险、降级、监控和迭代计划,已生成
+201,201-资料更新雷达.png,content/appendices/app-a-资料与书单/README.md,保持信息更新的渠道之后,官方文档、工程博客、Release、论文和社区,已生成
+202,202-引用注册表单点维护.png,content/references/README.md,Citation规则之后,引用链接、版本和适用章节集中维护,已生成
+203,203-编辑规范质量门禁.png,standards/editorial-guide.md,完成标准之前,结构、来源、代码、去重、术语和状态检查,已生成
+204,204-章节融合任务流水线.png,docs/superpowers/plans/2026-08-25-full-content-fusion.md,任务总览之后,目录源、映射、正文、项目面试、质检和发布,已生成
+205,205-映射审计门禁.png,mapping/audit-report.md,融合前门禁之后,目录、拆分、上下文样板、批量融合、覆盖与质量门禁,已生成
+206,206-迁移动作分布.png,mapping/README.md,迁移动作说明之后,主融合、补充融合、拆分融合、压缩关联和其他动作,已生成
+207,207-质量问题清理看板.png,mapping/README.md,质量标记之后,提示残留、引用占位、HTML分片、无效链接和题库重复,已生成
+208,208-理论章节标准结构.png,standards/editorial-guide.md,理论章节推荐结构之后,理论章节从摘要到来源说明的八部分结构,已生成
+209,209-三类代码分级.png,standards/editorial-guide.md,代码分级之后,伪代码、最小示例和配套项目的用途差异,已生成
+210,210-章节状态流转.png,standards/editorial-guide.md,章节状态之后,planned、drafting、reviewed和published状态,已生成
+211,211-全书内容融合三层架构.png,docs/superpowers/plans/2026-08-25-full-content-fusion.md,架构之后,book.yaml、映射JSON和content目录三层事实源,已生成
+212,212-理论项目面试三类章节分工.png,docs/superpowers/plans/2026-08-25-full-content-fusion.md,任务分工之后,理论讲机制、项目重实现、面试练表达,已生成
+213,213-Agent学习图谱终点.png,content/frontmatter/README.md,知识地图结尾,基础、原语、编排、RAG上下文、框架、安全生产、项目和面试完整图谱,已生成
